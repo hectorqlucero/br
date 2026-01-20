@@ -22,7 +22,9 @@
            :type :fk
            :fk :tipos_propiedad
            :fk-field [:nombre :activo]
-           :required? true}
+           :required? true
+           :hidden-in-grid? true}
+          {:id :tipo_nombre :label "Tipo de Propiedad" :grid-only? true}
 
    ;; Ubicación
           {:id :estado_id
@@ -30,19 +32,25 @@
            :type :fk
            :fk :estados
            :fk-field [:nombre]
-           :required? true}
+           :required? true
+           :hidden-in-grid? true}
+          {:id :estado_nombre :label "Estado" :grid-only? true}
 
           {:id :municipio_id
            :label "Municipio"
            :type :fk
            :fk :municipios
-           :fk-field [:nombre]}
+           :fk-field [:nombre]
+           :hidden-in-grid? true}
+          {:id :municipio_nombre :label "Municipio" :grid-only? true}
 
           {:id :colonia_id
            :label "Colonia"
            :type :fk
            :fk :colonias
-           :fk-field [:nombre :codigo_postal]}
+           :fk-field [:nombre :codigo_postal]
+           :hidden-in-grid? true}
+          {:id :agente_nombre :label "Agente" :grid-only? true}
 
           {:id :calle :label "Calle" :type :text :maxlength 200}
           {:id :numero_exterior :label "Núm. Exterior" :type :text :maxlength 10}
@@ -64,12 +72,18 @@
           {:id :antiguedad_anos :label "Antigüedad (años)" :type :number :min 0}
 
    ;; Amenidades
-          {:id :alberca :label "Alberca" :type :checkbox :value "F"}
-          {:id :jardin :label "Jardín" :type :checkbox :value "F"}
-          {:id :roof_garden :label "Roof Garden" :type :checkbox :value "F"}
-          {:id :terraza :label "Terraza" :type :checkbox :value "F"}
-          {:id :gym :label "Gimnasio" :type :checkbox :value "F"}
-          {:id :seguridad_24h :label "Seguridad 24h" :type :checkbox :value "F"}
+   {:id :alberca :label "Alberca" :type :radio :value "F" :options [{:id "albercaF" :value "F" :label "No"}
+                                                                    {:id "albercaT" :value "T" :label "Si"}]}
+   {:id :jardin :label "Jardín" :type :radio :value "F" :options [{:id "jardinF" :value "F" :label "no"}
+                                                                  {:id "jardinT" :value "T" :label "Si"}]}
+   {:id :roof_garden :label "Roof Garden" :type :radio :value "F" :options [{:id "roof_gardenF" :value "F" :label "No"}
+                                                                            {:id "roof_gardenT" :value "T" :label "Si"}]}
+   {:id :terraza :label "Terraza" :type :radio :value "F" :options [{:id "terrazaF" :value "F" :label "No"}
+                                                                    {:id "terrazaT" :value "T" :label "Si"}]}
+   {:id :gym :label "Gimnasio" :type :radio :value "F" :options [{:id "gymF" :value "F" :label "No"}
+                                                                 {:id "gymT" :value "T" :label "Si"}]}
+   {:id :seguridad_24h :label "Seguridad 24h" :type :radio :value "F" :options [{:id "s24F" :value "F" :label "No"}
+                                                                                {:id "s24T" :value "T" :label "Si"}]}
 
    ;; Comercial
           {:id :operacion
@@ -105,7 +119,8 @@
            :type :fk
            :fk :agentes
            :fk-field [:nombre :apellido_paterno :apellido_materno]
-           :required? true}
+           :required? true
+           :hidden-in-grid? true}
 
           {:id :cliente_propietario_id
            :label "Propietario"
@@ -125,7 +140,7 @@
                  tp.nombre as tipo_nombre,
                  e.nombre as estado_nombre,
                  m.nombre as municipio_nombre,
-                 a.nombre as agente_nombre
+                 concat(a.nombre,' ',a.apellido_paterno) as agente_nombre
           FROM propiedades p
           LEFT JOIN tipos_propiedad tp ON p.tipo_id = tp.id
           LEFT JOIN estados e ON p.estado_id = e.id
@@ -134,7 +149,17 @@
           WHERE p.activo = 'T'
           ORDER BY p.fecha_registro DESC"
 
-           :get "SELECT * FROM propiedades WHERE id = ?"}
+           :get "SELECT p.*,
+                tp.nombre as tipo_nombre,
+                e.nombre as estado_nombre,
+                m.nombre as municipio_nombre,
+                concat(a.nombre,' ',a.apellido_paterno) as agente_nombre
+                FROM propiedades p
+                LEFT JOIN tipos_propiedad tp ON p.tipo_id = tp.id
+                LEFT JOIN estados e on p.estado_id = e.id
+                LEFT JOIN municipios m ON p.municipio_id = m.id
+                LEFT JOIN agentes a ON p.agente_id = a.id
+                WHERE p.id = ?"}
 
  :actions {:new true :edit true :delete true}
 

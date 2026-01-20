@@ -296,7 +296,7 @@ MIT License - See [LICENSE](LICENSE) for details.
 
 ---
 
-## **Highlights:** **Why RS Framework?**
+## **Highlights:** **Why webgen Framework?**
 
 ### **Traditional Approach**
 - 81 generated files
@@ -304,7 +304,7 @@ MIT License - See [LICENSE](LICENSE) for details.
 - 4 hours per entity
 - Spaghetti code
 
-### **RS Framework**
+### **webgen Framework**
 - 27 config files
 - Never lose changes
 - 10 minutes per entity

@@ -1,4 +1,10 @@
-# br - Parameter-Driven Enterprise Application
+# How to run br - Realstate System
+- git clone
+- cd to your clone dir and type lein with-profile dev run
+
+# Doc below is for the webgen framework. You may need it for reference...
+
+# webgen - Parameter-Driven Enterprise Application
 
 This project was generated using the WebGen framework template from Clojars.
 

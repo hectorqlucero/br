@@ -1,0 +1,60 @@
+;; AUTO-GENERATED entity configuration for citas
+;; Generated: 2026-01-19T19:06:35.255830038
+;; 
+;; This file was scaffolded from the database schema.
+;; Feel free to edit and customize as needed.
+;; 
+
+{:entity :citas
+ :title "Citas"  ;; Edit this to your preference
+ :table "citas"
+ :connection :default
+ :rights ["U" "A" "S"]  ;; User levels: U=User, A=Admin, S=System
+ :mode :parameter-driven
+ :menu-hidden? true
+
+ ;; Fields auto-detected from database schema
+ :fields [{:id :id :label "ID" :type :hidden}
+          {:id :propiedad_id :label "Propiedades ID" :type :hidden}
+          {:id :cliente_id :label "Clientes ID" :type :hidden}
+          {:id :agente_id :label "Agentes ID" :type :hidden}
+          {:id :fecha_cita :label "Fecha Cita" :type :datetime :required? true}
+          {:id :duracion_minutos :label "Duracion Minutos" :type :number}
+          {:id :tipo :label "Tipo" :type :text :placeholder "Tipo..."}
+          {:id :status :label "Status" :type :text :placeholder "Status..."}
+          {:id :notas :label "Notas" :type :textarea :placeholder "Notas..."}
+          {:id :resultado :label "Resultado" :type :textarea :placeholder "Resultado..."}
+          {:id :created_by :label "Created By" :type :number}
+          {:id :created_at :label "Created At" :type :datetime}
+          {:id :modified_by :label "Modified By" :type :number}
+          {:id :modified_at :label "Modified At" :type :datetime}]
+
+ ;; Auto-generated queries (customize as needed)
+ :queries {:list "SELECT cit.*, CONCAT(age.nombre, ' ', age.apellido_paterno) as agente_nombre, CONCAT(cli.nombre, ' ', cli.apellido_paterno) as cliente_nombre, pro.titulo as propiedade_nombre FROM citas cit LEFT JOIN agentes age ON cit.agente_id = age.id LEFT JOIN clientes cli ON cit.cliente_id = cli.id LEFT JOIN propiedades pro ON cit.propiedad_id = pro.id ORDER BY cit.id DESC"
+           :get "SELECT * FROM citas WHERE id = ?"}
+
+ ;; Available actions
+ :actions {:new true :edit true :delete true}
+
+ ;; Enable audit trail (tracks who created/modified and when)
+ ;; Uncomment to enable:
+ ;; :audit? true
+
+ ;; Lifecycle hooks for business logic
+ ;; Senior developer: Implement these in src/br/hooks/citas.clj
+ ;; Uncomment and implement as needed:
+ ;; :hooks {:before-load :br.hooks.citas/before-load
+ ;;         :after-load :br.hooks.citas/after-load
+ ;;         :before-save :br.hooks.citas/before-save
+ ;;         :after-save :br.hooks.citas/after-save
+ ;;         :before-delete :br.hooks.citas/before-delete
+ ;;         :after-delete :br.hooks.citas/after-delete}
+
+ ;; Subgrids (parent-child relationships)
+ ;; Uncomment if this entity has child records:
+ ;; :subgrids [{:entity :related-table
+ ;;             :title "Related Records"
+ ;;             :foreign-key :parent_id
+ ;;             :icon "bi bi-list"
+ ;;             :label "Related Records"}]
+ }

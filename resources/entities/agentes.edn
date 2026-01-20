@@ -1,0 +1,54 @@
+{:entity :agentes
+ :title "Agentes Inmobiliarios"
+ :table "agentes"
+ :connection :default
+ :rights ["A" "S"]
+ :mode :parameter-driven
+ :audit? true
+
+ :menu-category :clients
+ :menu-order 2
+ :menu-icon "bi bi-person-badge"
+
+ :fields [{:id :id :type :hidden}
+
+          {:id :nombre :label "Nombre(s)" :type :text :required? true :maxlength 100}
+          {:id :apellido_paterno :label "Apellido Paterno" :type :text :maxlength 50}
+          {:id :apellido_materno :label "Apellido Materno" :type :text :maxlength 50}
+
+          {:id :email :label "Email" :type :email :required? true :maxlength 100}
+          {:id :telefono :label "Teléfono" :type :text :maxlength 15}
+          {:id :celular :label "Celular" :type :text :required? true :maxlength 15}
+
+          {:id :cedula_profesional :label "Cédula Profesional" :type :text :maxlength 20}
+          {:id :licencia_inmobiliaria :label "Licencia Inmobiliaria" :type :text :maxlength 50}
+          {:id :porcentaje_comision :label "% Comisión" :type :decimal :min 0 :max 100 :value 3.00}
+
+          {:id :biografia :label "Biografía" :type :textarea :rows 5 :hidden-in-grid? true}
+          {:id :foto_url :label "URL Foto" :type :text :maxlength 255 :hidden-in-grid? true}
+          {:id :activo :label "Activo" :type :radio :value "T" :options [{:id "activoT" :value "T" :label "Activo"}
+                                                                         {:id "activoF" :value "F" :label "Inactivo"}]}
+
+          {:id :nombre_completo :label "Nombre Completo" :type :text :grid-only? true}]
+
+ :queries {:list "SELECT * FROM agentes WHERE activo = 'T' ORDER BY apellido_paterno"
+           :get "SELECT * FROM agentes WHERE id = ?"}
+
+ :actions {:new true :edit true :delete false}
+
+ :hooks {:after-load :br.hooks.agentes/nombre-completo}
+
+ :subgrids [{:entity :propiedades
+             :foreign-key :agente_id
+             :title "Propiedades Asignadas"
+             :icon "bi bi-house"}
+
+            {:entity :ventas
+             :foreign-key :agente_id
+             :title "Ventas"
+             :icon "bi bi-cash-stack"}
+
+            {:entity :rentas
+             :foreign-key :agente_id
+             :title "Rentas"
+             :icon "bi bi-key"}]}

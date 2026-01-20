@@ -1,0 +1,49 @@
+;; AUTO-GENERATED entity configuration for estados
+;; Generated: 2026-01-19T20:07:56.810777711
+;; 
+;; This file was scaffolded from the database schema.
+;; Feel free to edit and customize as needed.
+;; 
+
+{:entity :estados
+ :title "Estados"  ;; Edit this to your preference
+ :table "estados"
+ :connection :default
+ :rights ["A" "S"]  ;; User levels: U=User, A=Admin, S=System
+ :mode :parameter-driven
+ :menu-category :catalog
+
+ ;; Fields auto-detected from database schema
+ :fields [{:id :id :label "ID" :type :hidden}
+          {:id :clave :label "Clave" :type :text :required? true :placeholder "Clave..."}
+          {:id :nombre :label "Nombre" :type :text :required? true :placeholder "Nombre..."}
+          {:id :activo :label "Activo" :type :radio :value "T" :options [{:id "activoT" :value "T" :label "Activo"}
+                                                                         {:id "activoF" :value "F" :label "Inactivo"}]}]
+
+ ;; Auto-generated queries (customize as needed)
+ :queries {:list "SELECT * FROM estados ORDER BY id DESC"
+           :get "SELECT * FROM estados WHERE id = ?"}
+
+ ;; Available actions
+ :actions {:new true :edit true :delete false}
+
+ ;; Enable audit trail (tracks who created/modified and when)
+ ;; Uncomment to enable:
+ ;; :audit? true
+
+ ;; Lifecycle hooks for business logic
+ ;; Senior developer: Implement these in src/br/hooks/estados.clj
+ ;; Uncomment and implement as needed:
+ ;; :hooks {:before-load :br.hooks.estados/before-load
+ ;;         :after-load :br.hooks.estados/after-load
+ ;;         :before-save :br.hooks.estados/before-save
+ ;;         :after-save :br.hooks.estados/after-save
+ ;;         :before-delete :br.hooks.estados/before-delete
+ ;;         :after-delete :br.hooks.estados/after-delete}
+
+ ;; Subgrids for related tables (auto-detected)
+ :subgrids [{:entity :municipios
+             :title "Municipios"
+             :foreign-key :estado_id
+             :icon "bi bi-list-ul"
+             :label "Municipios"}]}

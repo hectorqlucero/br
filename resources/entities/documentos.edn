@@ -1,0 +1,61 @@
+;; AUTO-GENERATED entity configuration for documentos
+;; Generated: 2026-01-19T19:07:33.035873980
+;; 
+;; This file was scaffolded from the database schema.
+;; Feel free to edit and customize as needed.
+;; 
+
+{:entity :documentos
+ :title "Documentos"  ;; Edit this to your preference
+ :table "documentos"
+ :connection :default
+ :rights ["U" "A" "S"]  ;; User levels: U=User, A=Admin, S=System
+ :mode :parameter-driven
+ :menu-hidden? true
+
+ ;; Fields auto-detected from database schema
+ :fields [{:id :id :label "ID" :type :hidden}
+          {:id :tipo :label "Tipo" :type :text :required? true :placeholder "Tipo..."}
+          {:id :entidad :label "Entidad" :type :text :placeholder "Entidad..."}
+          {:id :entidad_id :label "Entidad Id" :type :number}
+          {:id :titulo :label "Titulo" :type :text :required? true :placeholder "Titulo..."}
+          {:id :descripcion :label "Descripcion" :type :textarea :placeholder "Descripcion..."}
+          {:id :archivo_url :label "Archivo Url" :type :text :required? true :placeholder "Archivo Url..."}
+          {:id :tipo_archivo :label "Tipo Archivo" :type :text :placeholder "Tipo Archivo..."}
+          {:id :tamano_kb :label "Tamano Kb" :type :number}
+          {:id :fecha_documento :label "Fecha Documento" :type :date}
+          {:id :vigencia :label "Vigencia" :type :date}
+          {:id :created_by :label "Created By" :type :number}
+          {:id :created_at :label "Created At" :type :datetime}
+          {:id :modified_by :label "Modified By" :type :number}
+          {:id :modified_at :label "Modified At" :type :datetime}]
+
+ ;; Auto-generated queries (customize as needed)
+ :queries {:list "SELECT * FROM documentos ORDER BY id DESC"
+           :get "SELECT * FROM documentos WHERE id = ?"}
+
+ ;; Available actions
+ :actions {:new true :edit true :delete true}
+
+ ;; Enable audit trail (tracks who created/modified and when)
+ ;; Uncomment to enable:
+ ;; :audit? true
+
+ ;; Lifecycle hooks for business logic
+ ;; Senior developer: Implement these in src/br/hooks/documentos.clj
+ ;; Uncomment and implement as needed:
+ ;; :hooks {:before-load :br.hooks.documentos/before-load
+ ;;         :after-load :br.hooks.documentos/after-load
+ ;;         :before-save :br.hooks.documentos/before-save
+ ;;         :after-save :br.hooks.documentos/after-save
+ ;;         :before-delete :br.hooks.documentos/before-delete
+ ;;         :after-delete :br.hooks.documentos/after-delete}
+
+ ;; Subgrids (parent-child relationships)
+ ;; Uncomment if this entity has child records:
+ ;; :subgrids [{:entity :related-table
+ ;;             :title "Related Records"
+ ;;             :foreign-key :parent_id
+ ;;             :icon "bi bi-list"
+ ;;             :label "Related Records"}]
+ }

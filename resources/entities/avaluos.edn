@@ -1,0 +1,56 @@
+;; AUTO-GENERATED entity configuration for avaluos
+;; Generated: 2026-01-19T19:07:07.999610469
+;; 
+;; This file was scaffolded from the database schema.
+;; Feel free to edit and customize as needed.
+;; 
+
+{:entity :avaluos
+ :title "Avaluos"  ;; Edit this to your preference
+ :table "avaluos"
+ :connection :default
+ :rights ["U" "A" "S"]  ;; User levels: U=User, A=Admin, S=System
+ :mode :parameter-driven
+ :meny-hidden? true
+
+ ;; Fields auto-detected from database schema
+ :fields [{:id :id :label "ID" :type :hidden}
+          {:id :propiedad_id :label "Propiedades ID" :type :hidden}
+          {:id :fecha_avaluo :label "Fecha Avaluo" :type :date :required? true}
+          {:id :perito_valuador :label "Perito Valuador" :type :text :placeholder "Perito Valuador..."}
+          {:id :institucion :label "Institucion" :type :text :placeholder "Institucion..."}
+          {:id :valor_avaluo :label "Valor Avaluo" :type :decimal :required? true}
+          {:id :documento_url :label "Documento Url" :type :text :placeholder "Documento Url..."}
+          {:id :notas :label "Notas" :type :textarea :placeholder "Notas..."}
+          {:id :created_by :label "Created By" :type :number}
+          {:id :created_at :label "Created At" :type :datetime}]
+
+ ;; Auto-generated queries (customize as needed)
+ :queries {:list "SELECT ava.*, pro.titulo as propiedade_nombre FROM avaluos ava LEFT JOIN propiedades pro ON ava.propiedad_id = pro.id ORDER BY ava.id DESC"
+           :get "SELECT * FROM avaluos WHERE id = ?"}
+
+ ;; Available actions
+ :actions {:new true :edit true :delete true}
+
+ ;; Enable audit trail (tracks who created/modified and when)
+ ;; Uncomment to enable:
+ ;; :audit? true
+
+ ;; Lifecycle hooks for business logic
+ ;; Senior developer: Implement these in src/br/hooks/avaluos.clj
+ ;; Uncomment and implement as needed:
+ ;; :hooks {:before-load :br.hooks.avaluos/before-load
+ ;;         :after-load :br.hooks.avaluos/after-load
+ ;;         :before-save :br.hooks.avaluos/before-save
+ ;;         :after-save :br.hooks.avaluos/after-save
+ ;;         :before-delete :br.hooks.avaluos/before-delete
+ ;;         :after-delete :br.hooks.avaluos/after-delete}
+
+ ;; Subgrids (parent-child relationships)
+ ;; Uncomment if this entity has child records:
+ ;; :subgrids [{:entity :related-table
+ ;;             :title "Related Records"
+ ;;             :foreign-key :parent_id
+ ;;             :icon "bi bi-list"
+ ;;             :label "Related Records"}]
+ }

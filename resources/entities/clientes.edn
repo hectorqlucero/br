@@ -1,0 +1,92 @@
+{:entity :clientes
+ :title "Clientes"
+ :table "clientes"
+ :connection :default
+ :rights ["U" "A" "S"]
+ :mode :parameter-driven
+ :audit? true
+
+ :menu-category :clients
+ :menu-order 1
+ :menu-icon "bi bi-people"
+
+ :fields [{:id :id :type :hidden}
+
+          {:id :tipo
+           :label "Tipo de Cliente"
+           :type :select
+           :required true
+           :options [{:value "Comprador" :label "Comprador"}
+                     {:value "Vendedor" :label "Vendedor"}
+                     {:value "Arrendatario" :label "Arrendatario"}
+                     {:value "Arrendador" :label "Arrendador"}]}
+
+          {:id :nombre :label "Nombre(s)" :type :text :required? true :maxlength 100}
+          {:id :apellido_paterno :label "Apellido Paterno" :type :text :maxlength 50}
+          {:id :apellido_materno :label "Apellido Materno" :type :text :maxlength 50}
+
+          {:id :email :label "Email" :type :email :maxlength 100}
+          {:id :telefono :label "Teléfono" :type :text :maxlength 15 :placeholder "33-1234-5678"}
+          {:id :celular :label "Celular" :type :text :maxlength 15 :placeholder "33-1234-5678"}
+
+          {:id :rfc 
+           :label "RFC" 
+           :type :text 
+           :maxlength 13 
+           :validation :br.validators.common/rfc-valido?}
+
+          {:id :curp 
+           :label "CURP" 
+           :type :text 
+           :maxlength 18 
+           :validation :br.validators.common/curp-valida?}
+
+          {:id :fecha_nacimiento :label "Fecha de Nacimiento" :type :date}
+
+          {:id :estado_civil
+           :label "Estado Civil"
+           :type :select
+           :options [{:value "Soltero(a)" :label "Soltero(a)"}
+                     {:value "Casado(a)" :label "Casado(a)"}
+                     {:value "Divorciado(a)" :label "Divorciado(a)"}
+                     {:value "Viudo(a)" :label "Viudo(a)"}
+                     {:value "Unión Libre" :label "Unión Libre"}]}
+
+          {:id :ocupacion :label "Ocupación" :type :text :maxlength 100}
+
+   ;; Dirección
+          {:id :calle :label "Calle" :type :text :maxlength 200}
+          {:id :numero_exterior :label "Núm. Exterior" :type :text :maxlength 10}
+          {:id :numero_interior :label "Núm. Interior" :type :text :maxlength 10}
+          {:id :colonia_id
+           :label "Colonia"
+           :type :fk
+           :fk :colonias
+           :fk-field [:nombre :codigo_postal :activo]}
+          {:id :codigo_postal :label "C.P." :type :text :maxlength 5}
+
+          {:id :notas :label "Notas" :type :textarea :rows 4 :hidden-in-grid? true}
+          {:id :activo :label "Activo" :type :radio :value "T" :options [{:id "activoT" :value "T" :label "Activo"}
+                                                                         {:id "activoF" :value "F" :label "Inactivo"}]}
+
+   ;; Nombre completo computado
+          {:id :nombre_completo :label "Nombre Completo" :type :text :grid-only? true}]
+
+ :queries {:list "SELECT c.*,
+                 co.nombre as colonia_nombre
+          FROM clientes c
+          LEFT JOIN colonias co ON c.colonia_id = co.id
+          WHERE c.activo = 'T'
+          ORDER BY c.apellido_paterno, c.apellido_materno, c.nombre"
+
+           :get "SELECT * FROM clientes WHERE id = ?"}
+
+ :actions {:new true :edit true :delete true}
+
+ :hooks {:after-load :br.hooks.clientes/nombre-completo
+         :before-save :br.hooks.clientes/validar-cliente}
+
+ :subgrids [{:entity :documentos
+             :foreign-key :entidad_id
+             :title "Documentos"
+             :icon "bi bi-file-earmark"}]}

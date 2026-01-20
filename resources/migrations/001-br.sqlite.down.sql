@@ -1,0 +1,15 @@
+drop table if exists usuarios;
+drop table if exists documentos;
+drop table if exists avaluos;
+drop table if exists pagos;
+drop table if exists citas;
+drop table if exists rentas;
+drop table if exists ventas;
+drop table if exists fotos_propiedad;
+drop table if exists propiedades;
+drop table if exists agentes;
+drop table if exists clientes;
+drop table if exists tipos_propiedad;
+drop table if exists colonias;
+drop table if exists municipios;
+drop table if exists estados;

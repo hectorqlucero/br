@@ -1,0 +1,53 @@
+;; AUTO-GENERATED entity configuration for fotos_propiedad
+;; Generated: 2026-01-19T19:05:41.418276310
+;; 
+;; This file was scaffolded from the database schema.
+;; Feel free to edit and customize as needed.
+;; 
+
+{:entity :fotos_propiedad
+ :title "Fotos Propiedad"  ;; Edit this to your preference
+ :table "fotos_propiedad"
+ :connection :default
+ :rights ["U" "A" "S"]  ;; User levels: U=User, A=Admin, S=System
+ :mode :parameter-driven
+ :menu-hidden? true
+
+ ;; Fields auto-detected from database schema
+ :fields [{:id :id :label "ID" :type :hidden}
+          {:id :propiedad_id :label "Propiedades ID" :type :hidden}
+          {:id :url :label "Url" :type :text :required? true :placeholder "Url..."}
+          {:id :descripcion :label "Descripcion" :type :text :placeholder "Descripcion..."}
+          {:id :es_principal :label "Es Principal" :type :text :placeholder "Es Principal..."}
+          {:id :orden :label "Orden" :type :number}
+          {:id :created_at :label "Created At" :type :datetime}]
+
+ ;; Auto-generated queries (customize as needed)
+ :queries {:list "SELECT fot.*, pro.titulo as propiedade_nombre FROM fotos_propiedad fot LEFT JOIN propiedades pro ON fot.propiedad_id = pro.id ORDER BY fot.id DESC"
+           :get "SELECT * FROM fotos_propiedad WHERE id = ?"}
+
+ ;; Available actions
+ :actions {:new true :edit true :delete true}
+
+ ;; Enable audit trail (tracks who created/modified and when)
+ ;; Uncomment to enable:
+ ;; :audit? true
+
+ ;; Lifecycle hooks for business logic
+ ;; Senior developer: Implement these in src/br/hooks/fotos_propiedad.clj
+ ;; Uncomment and implement as needed:
+ ;; :hooks {:before-load :br.hooks.fotos_propiedad/before-load
+ ;;         :after-load :br.hooks.fotos_propiedad/after-load
+ ;;         :before-save :br.hooks.fotos_propiedad/before-save
+ ;;         :after-save :br.hooks.fotos_propiedad/after-save
+ ;;         :before-delete :br.hooks.fotos_propiedad/before-delete
+ ;;         :after-delete :br.hooks.fotos_propiedad/after-delete}
+
+ ;; Subgrids (parent-child relationships)
+ ;; Uncomment if this entity has child records:
+ ;; :subgrids [{:entity :related-table
+ ;;             :title "Related Records"
+ ;;             :foreign-key :parent_id
+ ;;             :icon "bi bi-list"
+ ;;             :label "Related Records"}]
+ }

@@ -1,0 +1,53 @@
+;; AUTO-GENERATED entity configuration for municipios
+;; Generated: 2026-01-19T19:03:07.202490231
+;; 
+;; This file was scaffolded from the database schema.
+;; Feel free to edit and customize as needed.
+;; 
+
+{:entity :municipios
+ :title "Municipios"  ;; Edit this to your preference
+ :table "municipios"
+ :connection :default
+ :rights ["U" "A" "S"]  ;; User levels: U=User, A=Admin, S=System
+ :mode :parameter-driven
+ :menu-hidden? true
+
+ ;; Fields auto-detected from database schema
+ :fields [{:id :id :label "ID" :type :hidden}
+          {:id :estado_id :label "Estados ID" :type :hidden}
+          {:id :nombre :label "Nombre" :type :text :required? true :placeholder "Nombre..."}
+          {:id :activo :label "Activo" :type :text :placeholder "Activo..."}]
+
+ ;; Auto-generated queries (customize as needed)
+ :queries {:list "SELECT mun.*, est.nombre as estado_nombre FROM municipios mun LEFT JOIN estados est ON mun.estado_id = est.id ORDER BY mun.id DESC"
+           :get "SELECT * FROM municipios WHERE id = ?"}
+
+ ;; Available actions
+ :actions {:new true :edit true :delete true}
+
+ ;; Enable audit trail (tracks who created/modified and when)
+ ;; Uncomment to enable:
+ ;; :audit? true
+
+ ;; Lifecycle hooks for business logic
+ ;; Senior developer: Implement these in src/br/hooks/municipios.clj
+ ;; Uncomment and implement as needed:
+ ;; :hooks {:before-load :br.hooks.municipios/before-load
+ ;;         :after-load :br.hooks.municipios/after-load
+ ;;         :before-save :br.hooks.municipios/before-save
+ ;;         :after-save :br.hooks.municipios/after-save
+ ;;         :before-delete :br.hooks.municipios/before-delete
+ ;;         :after-delete :br.hooks.municipios/after-delete}
+
+ ;; Subgrids for related tables (auto-detected)
+ :subgrids [{:entity :colonias
+             :title "Colonias"
+             :foreign-key :municipio_id
+             :icon "bi bi-list-ul"
+             :label "Colonias"}
+            {:entity :propiedades
+             :title "Propiedades"
+             :foreign-key :municipio_id
+             :icon "bi bi-building"
+             :label "Propiedades"}]}

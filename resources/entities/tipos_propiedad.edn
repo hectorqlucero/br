@@ -1,0 +1,50 @@
+;; AUTO-GENERATED entity configuration for tipos_propiedad
+;; Generated: 2026-01-19T19:03:38.832244483
+;; 
+;; This file was scaffolded from the database schema.
+;; Feel free to edit and customize as needed.
+;; 
+
+{:entity :tipos_propiedad
+ :title "Tipos Propiedad"  ;; Edit this to your preference
+ :table "tipos_propiedad"
+ :connection :default
+ :rights ["A" "S"]  ;; User levels: U=User, A=Admin, S=System
+ :mode :parameter-driven
+ :menu-category :catalog
+ :menu-order 4
+
+ ;; Fields auto-detected from database schema
+ :fields [{:id :id :label "ID" :type :hidden}
+          {:id :nombre :label "Nombre" :type :text :required? true :placeholder "Nombre..."}
+          {:id :descripcion :label "Descripcion" :type :textarea :rows 3}
+          {:id :activo :label "Activo" :type :radio :value "T" :options [{:id "activoT" :value "T" :label "Activo"}
+                                                                         {:id "activoF" :value "F" :label "Inactivo"}]}]
+
+ ;; Auto-generated queries (customize as needed)
+ :queries {:list "SELECT * FROM tipos_propiedad ORDER BY id DESC"
+           :get "SELECT * FROM tipos_propiedad WHERE id = ?"}
+
+ ;; Available actions
+ :actions {:new true :edit true :delete false}
+
+ ;; Enable audit trail (tracks who created/modified and when)
+ ;; Uncomment to enable:
+ ;; :audit? true
+
+ ;; Lifecycle hooks for business logic
+ ;; Senior developer: Implement these in src/br/hooks/tipos_propiedad.clj
+ ;; Uncomment and implement as needed:
+ ;; :hooks {:before-load :br.hooks.tipos_propiedad/before-load
+ ;;         :after-load :br.hooks.tipos_propiedad/after-load
+ ;;         :before-save :br.hooks.tipos_propiedad/before-save
+ ;;         :after-save :br.hooks.tipos_propiedad/after-save
+ ;;         :before-delete :br.hooks.tipos_propiedad/before-delete
+ ;;         :after-delete :br.hooks.tipos_propiedad/after-delete}
+
+ ;; Subgrids for related tables (auto-detected)
+ :subgrids [{:entity :propiedades
+             :title "Propiedades"
+             :foreign-key :tipo_id
+             :icon "bi bi-building"
+             :label "Propiedades"}]}

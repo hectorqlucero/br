@@ -16,16 +16,47 @@
  ;; Fields auto-detected from database schema
  :fields [{:id :id :label "ID" :type :hidden}
           {:id :propiedad_id :label "Propiedades ID" :type :hidden}
-          {:id :cliente_id :label "Clientes ID" :type :hidden}
-          {:id :agente_id :label "Agentes ID" :type :hidden}
+
+          {:id :cliente_id
+           :label "Cliente"
+           :required? true
+           :type :fk
+           :fk :clientes
+           :fk-field [:nombre :apellido_paterno :apellido_materno]}
+
+          {:id :agente_id
+           :label "Agente"
+           :required? true
+           :type :fk
+           :fk :agentes
+           :fk-field [:nombre :apellido_paterno :apellido_materno]}
+
           {:id :fecha_cita :label "Fecha Cita" :type :datetime :required? true}
-          {:id :duracion_minutos :label "Duracion Minutos" :type :number}
-          {:id :tipo :label "Tipo" :type :text :placeholder "Tipo..."}
-          {:id :status :label "Status" :type :text :placeholder "Status..."}
+          {:id :duracion_minutos :label "Duracion Minutos" :type :number :value 60}
+
+          {:id :tipo
+           :label "Tipo"
+           :required? true
+           :value "Visita"
+           :type :select
+           :options [{:value "Visita" :label "Visita"}
+                     {:value "Llamada" :label "Llamada"}
+                     {:value "Virtual" :label "Virtual"}]}
+
+          {:id :status
+           :label "Status"
+           :required? true
+           :value "Progamada"
+           :type :select
+           :options [{:value "Programada" :label "Programada"}
+                     {:value "Completada" :label "Completada"}
+                     {:value "Cancelada" :label "Cancelada"}
+                     {:value "NoAsistió" :label "NoAsistió"}]}
+
           {:id :notas :label "Notas" :type :textarea :placeholder "Notas..."}
-          {:id :resultado :label "Resultado" :type :textarea :placeholder "Resultado..."}
+          {:id :resultado :label "Resultado" :type :textarea :placeholder "Comentarios pos-visita..."}
           {:id :created_by :label "Created By" :type :number}
-          {:id :created_at :label "Created At" :type :datetime}
+          ; {:id :created_at :label "Created At" :type :datetime :displayonly true}
           {:id :modified_by :label "Modified By" :type :number}
           {:id :modified_at :label "Modified At" :type :datetime}]
 

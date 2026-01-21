@@ -1,6 +1,5 @@
 {:connections
- {
-  ;; --- Local SQLite Database (Great for development) ---
+ {  ;; --- Local SQLite Database (Great for development) ---
   :sqlite {:db-type   "sqlite"
            :db-class  "org.sqlite.JDBC"
            :db-name   "db/br.sqlite"}
@@ -13,7 +12,7 @@
 
  ;; --- Application Settings ---
  :uploads      "./uploads/br/"
- :site-name    "Bienes y Raices"
+ :site-name    "Bienes Raices Mexicali"
  :company-name "Ruiz Sofware Solutions"
  :port         3000
  :tz           "US/Pacific"

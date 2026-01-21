@@ -57,11 +57,18 @@
   (and value (> value 0)))
 
 (defn precio-razonable?
-  "Valida rango razonable para precios inmobiliarios"
+  "Valida rango razonable para precios inmobiliarios (acepta strings y números, y permite nil)
+   Returns true for nil so presence is enforced by business logic hooks, not the validator."
   [value _]
-  (and value
-       (>= value 10000) ; Mínimo $10,000 MXN
-       (<= value 1000000000))) ; Máximo $1,000 millones
+  (let [v (cond
+            (number? value) value
+            (and (string? value) (not (str/blank? value)))
+            (try (Double/parseDouble (str value)) (catch Exception _ nil))
+            :else nil)]
+    (if (nil? v)
+      true
+      (and (>= v 10000) ; Mínimo $10,000 MXN
+           (<= v 1000000000))))) ; Máximo $1,000 millones ; Máximo $1,000 millones ; Máximo $1,000 millones
 
 ;; =============================================================================
 ;; Porcentaje

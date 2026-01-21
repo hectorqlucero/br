@@ -18,61 +18,78 @@
 ;; =============================================================================
 
 (defn validar-propiedad
-  "Valida reglas de negocio antes de guardar"
+  "Valida reglas de negocio antes de guardar (normaliza precios y m2)"
   [params]
   (let [operacion (:operacion params)
-        precio-venta (:precio_venta params)
-        precio-renta (:precio_renta params)]
+        parse-num (fn [v]
+                    (cond
+                      (nil? v) nil
+                      (and (string? v) (clojure.string/blank? v)) nil
+                      (number? v) v
+                      :else (try (Double/parseDouble (str v)) (catch Exception _ nil))))
 
-    (cond
-      ;; Si operación es Venta, debe tener precio de venta
-      (and (= operacion "Venta") (or (nil? precio-venta) (<= precio-venta 0)))
-      {:errors {:precio_venta "Debe especificar precio de venta"}}
+        precio-venta (parse-num (:precio_venta params))
+        precio-renta (parse-num (:precio_renta params))
+        terreno-m2 (parse-num (:terreno_m2 params))
+        construccion-m2 (parse-num (:construccion_m2 params))
 
-      ;; Si operación es Renta, debe tener precio de renta
-      (and (= operacion "Renta") (or (nil? precio-renta) (<= precio-renta 0)))
-      {:errors {:precio_renta "Debe especificar precio de renta mensual"}}
+        params (-> params
+                   (assoc :precio_venta precio-venta)
+                   (assoc :precio_renta precio-renta)
+                   (assoc :terreno_m2 terreno-m2)
+                   (assoc :construccion_m2 construccion-m2))]
+    (let [result (cond
+                   (and (= operacion "Venta") (or (nil? precio-venta) (<= precio-venta 0)))
+                   {:errors {:precio_venta "Debe especificar precio de venta"}}
 
-      ;; Si operación es Ambos, debe tener ambos precios
-      (and (= operacion "Ambos")
-           (or (nil? precio-venta) (<= precio-venta 0)
-               (nil? precio-renta) (<= precio-renta 0)))
-      {:errors {:general "Debe especificar precio de venta Y renta"}}
+                   (and (= operacion "Renta") (or (nil? precio-renta) (<= precio-renta 0)))
+                   {:errors {:precio_renta "Debe especificar precio de renta mensual"}}
 
-      ;; Construcción no puede ser mayor que terreno
-      (and (:construccion_m2 params) (:terreno_m2 params)
-           (> (:construccion_m2 params) (:terreno_m2 params)))
-      {:errors {:construccion_m2 "No puede ser mayor que el terreno"}}
+                   (and (= operacion "Ambos")
+                        (or (nil? precio-venta) (<= precio-venta 0)
+                            (nil? precio-renta) (<= precio-renta 0)))
+                   {:errors {:general "Debe especificar precio de venta Y renta"}}
 
-      ;; Todo OK
-      :else params)))
+                   (and (some? construccion-m2) (some? terreno-m2) (> construccion-m2 terreno-m2))
+                   {:errors {:construccion_m2 "No puede ser mayor que el terreno"}}
+
+                   :else params)]
+      (try (println "[HOOK validar-propiedad] result:" result) (catch Throwable _))
+
+      ;; Diagnostic: show postvars that will be sent to DB
+      (try
+        (let [postvars (crud/build-postvars "propiedades" params :conn :default)]
+          (println "[HOOK validar-propiedad] postvars keys:" (keys postvars) "sample:" (select-keys postvars [:id :clave :titulo :agente_id :tipo_id :estado_id :precio_renta :precio_venta])))
+        (catch Throwable _))
+
+      result)))
 
 ;; =============================================================================
 ;; AFTER-SAVE: Generar clave única
 ;; =============================================================================
 
 (defn generar-clave
-  "Genera clave única para la propiedad si no tiene"
-  [entity-id params]
-  (when-not (:clave params)
-    (let [tipo-id (:tipo_id params)
-          estado-id (:estado_id params)
-          ;; Obtener abreviatura del tipo y estado
-          tipo-abrev (-> (crud/Query ["SELECT nombre FROM tipos_propiedad WHERE id = ?" tipo-id])
-                         first
-                         :nombre
-                         (str/upper-case)
-                         (subs 0 3))
-          estado-abrev (-> (crud/Query ["SELECT clave FROM estados WHERE id = ?" estado-id])
-                           first
-                           :clave)
-          ;; Generar clave: TIPO-ESTADO-ID (ej: CAS-JA-00123)
-          clave (format "%s-%s-%05d" tipo-abrev estado-abrev entity-id)]
-
-      ;; Actualizar la clave
-      (crud/Query! ["UPDATE propiedades SET clave = ? WHERE id = ?" clave entity-id])))
-
-  {:success true :message "Propiedad guardada exitosamente"})
+  "Genera clave única para la propiedad si no tiene.
+   Accepts either (id params) or (params) for compatibility."
+  [entity-id-or-params params-or-nil]
+  (let [[entity-id params] (if (map? entity-id-or-params)
+                             [(:id entity-id-or-params) entity-id-or-params]
+                             [entity-id-or-params params-or-nil])]
+    (when (and entity-id (not (:clave params)))
+      (let [tipo-id (:tipo_id params)
+            estado-id (:estado_id params)
+            tipo-row (when tipo-id (first (crud/Query ["SELECT nombre FROM tipos_propiedad WHERE id = ?" tipo-id])))
+            tipo-n (or (:nombre tipo-row) "")
+            tipo-abrev (-> tipo-n str/upper-case (subs 0 (min 3 (count tipo-n))))
+            estado-row (when estado-id (first (crud/Query ["SELECT clave FROM estados WHERE id = ?" estado-id])))
+            estado-abrev (or (:clave estado-row) "")
+            clave (format "%s-%s-%05d" tipo-abrev estado-abrev entity-id)]
+        (try
+          (when (and (seq tipo-abrev) (seq estado-abrev) (pos? (long entity-id)))
+            (crud/Query! ["UPDATE propiedades SET clave = ? WHERE id = ?" clave entity-id]))
+          (catch Exception e
+            (try (println "[ERROR] generar-clave db update failed:" (.getMessage e)) (catch Throwable _))))))
+    {:success true :message "Propiedad guardada exitosamente"}))
 
 ;; =============================================================================
 ;; BEFORE-DELETE: Verificar transacciones

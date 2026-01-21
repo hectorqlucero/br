@@ -4,7 +4,6 @@
  :connection :default
  :rights ["A" "S"]
  :mode :parameter-driven
- :audit? true
 
  :menu-category :clients
  :menu-order 2

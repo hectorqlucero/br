@@ -54,14 +54,6 @@
                    {:errors {:construccion_m2 "No puede ser mayor que el terreno"}}
 
                    :else params)]
-      (try (println "[HOOK validar-propiedad] result:" result) (catch Throwable _))
-
-      ;; Diagnostic: show postvars that will be sent to DB
-      (try
-        (let [postvars (crud/build-postvars "propiedades" params :conn :default)]
-          (println "[HOOK validar-propiedad] postvars keys:" (keys postvars) "sample:" (select-keys postvars [:id :clave :titulo :agente_id :tipo_id :estado_id :precio_renta :precio_venta])))
-        (catch Throwable _))
-
       result)))
 
 ;; =============================================================================

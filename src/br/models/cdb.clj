@@ -110,6 +110,11 @@
 ;; -----------------------------------------------------------------------------
 ;; Idempotent, date-centric seeds for migration tables (non-user data)
 ;; Call with (seed-migration-tables! :localdb) or (seed-migration-tables!)
+;; This is optional only when you need to reseed the database. It is date centric
+;; so that the data makes sense when testing the software.
+;; Nota:  para empezar es lo mismo lein migrate, lein database esto no corre
+;; tienes que ir a comment al final y correrlo aqui dentro del editor no cree
+;; un alias en leiningen. Esto es temporario para probar el software.
 ;; -----------------------------------------------------------------------------
 
 (defn- fmt-datetime
@@ -400,4 +405,4 @@
         @counts))))
 
 (comment
-  (seed-migration-tables!))
+  (seed-migration-tables!)) ;; Only run when you want new date centric data.  Solo correlo cuando quieras datos nuevos basado en la fecha que lo corriste.

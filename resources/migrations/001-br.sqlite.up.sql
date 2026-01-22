@@ -10,40 +10,6 @@ CREATE TABLE estados (
   activo CHAR(1) DEFAULT 'T'
 );
 
-INSERT INTO estados (clave, nombre) VALUES
-  ('AG', 'Aguascalientes'),
-  ('BC', 'Baja California'),
-  ('BS', 'Baja California Sur'),
-  ('CM', 'Campeche'),
-  ('CS', 'Chiapas'),
-  ('CH', 'Chihuahua'),
-  ('CX', 'Ciudad de México'),
-  ('CO', 'Coahuila'),
-  ('CL', 'Colima'),
-  ('DG', 'Durango'),
-  ('GT', 'Guanajuato'),
-  ('GR', 'Guerrero'),
-  ('HG', 'Hidalgo'),
-  ('JA', 'Jalisco'),
-  ('EM', 'Estado de México'),
-  ('MI', 'Michoacán'),
-  ('MO', 'Morelos'),
-  ('NA', 'Nayarit'),
-  ('NL', 'Nuevo León'),
-  ('OA', 'Oaxaca'),
-  ('PU', 'Puebla'),
-  ('QT', 'Querétaro'),
-  ('QR', 'Quintana Roo'),
-  ('SL', 'San Luis Potosí'),
-  ('SI', 'Sinaloa'),
-  ('SO', 'Sonora'),
-  ('TB', 'Tabasco'),
-  ('TM', 'Tamaulipas'),
-  ('TL', 'Tlaxcala'),
-  ('VE', 'Veracruz'),
-  ('YU', 'Yucatán'),
-  ('ZA', 'Zacatecas');
-
 -- Municipios (ejemplo para algunos estados)
 CREATE TABLE municipios (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -52,14 +18,6 @@ CREATE TABLE municipios (
   activo CHAR(1) DEFAULT 'T',
   FOREIGN KEY (estado_id) REFERENCES estados(id)
 );
-
--- Ejemplos de municipios de Jalisco
-INSERT INTO municipios (estado_id, nombre) VALUES
-  (14, 'Guadalajara'),
-  (14, 'Zapopan'),
-  (14, 'Tlaquepaque'),
-  (14, 'Tonalá'),
-  (14, 'Puerto Vallarta');
 
 -- Colonias/Barrios
 CREATE TABLE colonias (
@@ -78,16 +36,6 @@ CREATE TABLE tipos_propiedad (
   descripcion TEXT,
   activo CHAR(1) DEFAULT 'T'
 );
-
-INSERT INTO tipos_propiedad (nombre, descripcion) VALUES
-  ('Casa', 'Casa habitación independiente'),
-  ('Departamento', 'Departamento o condominio'),
-  ('Terreno', 'Terreno baldío'),
-  ('Local Comercial', 'Local para negocio'),
-  ('Oficina', 'Oficina o espacio corporativo'),
-  ('Bodega', 'Bodega industrial o comercial'),
-  ('Rancho', 'Rancho o finca rural'),
-  ('Penthouse', 'Departamento de lujo en último piso');
 
 -- =====================================================
 -- MÓDULO DE CLIENTES

@@ -9,20 +9,45 @@
  :title "Pagos"  ;; Edit this to your preference
  :table "pagos"
  :connection :default
- :rights ["U" "A" "S"]  ;; User levels: U=User, A=Admin, S=System
+ :rights ["A" "S"]  ;; User levels: U=User, A=Admin, S=System
  :mode :parameter-driven
- :menu-hidden? true
+ :menu-hidden? false
  :audit? true
 
  ;; Fields auto-detected from database schema
  :fields [{:id :id :label "ID" :type :hidden}
-          {:id :tipo :label "Tipo" :type :text :required? true :placeholder "Tipo..."}
-          {:id :referencia_id :label "Referencia Id" :type :number}
-          {:id :cliente_id :label "Clientes ID" :type :hidden}
-          {:id :agente_id :label "Agentes ID" :type :hidden}
+          {:id :tipo :label "Tipo" :type :select :required? true :options [{:value "Renta" :label "Renta"}
+                                                                           {:value "Venta" :label "Venta"}
+                                                                           {:value "Comision" :label "Comision"}]}
+
+          {:id :referencia_id
+           :label "Referente A"
+           :type :fk
+           :fk :propiedades
+           :fk-field [:titulo]
+           :hidden-in-grid? true}
+
+          {:id :cliente_id
+           :label "Cliente"
+           :type :fk
+           :fk :clientes
+           :fk-field [:nombre :apellido_paterno :apellido_materno]
+           :hidden-in-grid? true}
+
+          {:id :agente_id
+           :label "Agente"
+           :type :fk
+           :fk :agentes
+           :fk-field [:nombre :apellido_paterno :apellido_materno]
+           :hidden-in-grid? true}
+
           {:id :fecha_pago :label "Fecha Pago" :type :date :required? true}
-          {:id :monto :label "Monto" :type :decimal :required? true}
-          {:id :metodo_pago :label "Metodo Pago" :type :text :placeholder "Metodo Pago..."}
+          {:id :monto :label "Monto" :type :decimal :min 0 :step 0.01 :required? true}
+          {:id :metodo_pago :label "Metodo Pago" :type :select :options [{:value "" :label "Seleccionar Metodo de Pago"}
+                                                                         {:value "Efectivo" :label "Efectivo"}
+                                                                         {:value "Transferencia" :label "Transferencia"}
+                                                                         {:value "Cheque" :label "Cheque"}
+                                                                         {:value "Tarjeta" :label "Tarjeta"}]}
           {:id :referencia :label "Referencia" :type :text :placeholder "Referencia..."}
           {:id :concepto :label "Concepto" :type :textarea :placeholder "Concepto..."}
           {:id :notas :label "Notas" :type :textarea :placeholder "Notas..."}
@@ -31,7 +56,14 @@
           {:id :created_at :label "Created At" :type :hidden}]
 
  ;; Auto-generated queries (customize as needed)
- :queries {:list "SELECT pag.*, CONCAT(age.nombre, ' ', age.apellido_paterno) as agente_nombre, CONCAT(cli.nombre, ' ', cli.apellido_paterno) as cliente_nombre FROM pagos pag LEFT JOIN agentes age ON pag.agente_id = age.id LEFT JOIN clientes cli ON pag.cliente_id = cli.id ORDER BY pag.id DESC"
+ :queries {:list "SELECT 
+                 pag.*, 
+                 CONCAT(age.nombre, ' ', age.apellido_paterno) as agente_nombre, 
+                 CONCAT(cli.nombre, ' ', cli.apellido_paterno) as cliente_nombre 
+                 FROM pagos pag 
+                 LEFT JOIN agentes age ON pag.agente_id = age.id 
+                 LEFT JOIN clientes cli ON pag.cliente_id = cli.id 
+                 ORDER BY pag.id DESC"
            :get "SELECT * FROM pagos WHERE id = ?"}
 
  ;; Available actions
@@ -44,12 +76,13 @@
  ;; Lifecycle hooks for business logic
  ;; Senior developer: Implement these in src/br/hooks/pagos.clj
  ;; Uncomment and implement as needed:
- ;; :hooks {:before-load :br.hooks.pagos/before-load
- ;;         :after-load :br.hooks.pagos/after-load
- ;;         :before-save :br.hooks.pagos/before-save
- ;;         :after-save :br.hooks.pagos/after-save
- ;;         :before-delete :br.hooks.pagos/before-delete
- ;;         :after-delete :br.hooks.pagos/after-delete}
+ :hooks {         ; :before-load :br.hooks.pagos/before-load
+         ; :after-load :br.hooks.pagos/after-load
+         ; :before-save :br.hooks.pagos/before-save
+         :after-save :br.hooks.pagos/after-save
+         ; :before-delete :br.hooks.pagos/before-delete
+         ; :after-delete :br.hooks.pagos/after-delete
+         }
 
  ;; Subgrids (parent-child relationships)
  ;; Uncomment if this entity has child records:

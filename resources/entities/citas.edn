@@ -76,7 +76,7 @@
                  LEFT JOIN agentes age ON cit.agente_id = age.id 
                  LEFT JOIN clientes cli ON cit.cliente_id = cli.id 
                  LEFT JOIN propiedades pro ON cit.propiedad_id = pro.id 
-                 ORDER BY cit.id DESC"
+                 ORDER BY fecha_cita,cit.id DESC"
            :get "SELECT * FROM citas WHERE id = ?"}
 
  ;; Available actions

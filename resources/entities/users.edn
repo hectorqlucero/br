@@ -12,10 +12,9 @@
  :rights ["A" "S"]  ;; User levels: U=User, A=Admin, S=System
  :mode :parameter-driven
  :menu-category :Usuarios
- 
+
  ;; Fields auto-detected from database schema
- :fields [
-          {:id :id :label "ID" :type :hidden}
+ :fields [{:id :id :label "ID" :type :hidden}
           {:id :lastname :label "Apellido Paterno" :type :text :placeholder "Apellido paterno..."}
           {:id :firstname :label "Nombre" :type :text :placeholder "Nombre..."}
           {:id :username :label "Usuario" :type :text :placeholder "Usuario..."}
@@ -32,25 +31,25 @@
           {:id :active :label "Active" :type :radio :value "T" :options [{:id "activeT" :value "T" :label "Activo"}
                                                                          {:id "activeF" :value "F" :label "Inactivo"}]}
           ; {:id :imagen :label "Imagen" :type :file}
-          {:id :agente_id 
-           :label "Agente" 
+          {:id :agente_id
+           :label "Agente"
            :type :fk
            :fk :agentes
            :fk-field [:nombre :apellido_paterno :apellido_materno]}
           ; {:id :last_login :label "Last Login" :type :textarea :placeholder "Last Login..."}
           ]
- 
+
  ;; Auto-generated queries (customize as needed)
  :queries {:list "SELECT use.*, CONCAT(age.nombre, ' ', age.apellido_paterno) as agente_nombre FROM users use LEFT JOIN agentes age ON use.agente_id = age.id ORDER BY use.id DESC"
            :get "SELECT * FROM users WHERE id = ?"}
- 
+
  ;; Available actions
  :actions {:new true :edit true :delete true}
- 
+
  ;; Enable audit trail (tracks who created/modified and when)
  ;; Uncomment to enable:
- ;; :audit? true
- 
+ :audit? true
+
  ;; Lifecycle hooks for business logic
  ;; Senior developer: Implement these in src/br/hooks/users.clj
  ;; Uncomment and implement as needed:
@@ -60,7 +59,7 @@
  ;;         :after-save :br.hooks.users/after-save
  ;;         :before-delete :br.hooks.users/before-delete
  ;;         :after-delete :br.hooks.users/after-delete}
- 
+
  ;; Subgrids (parent-child relationships)
  ;; Uncomment if this entity has child records:
  ;; :subgrids [{:entity :related-table
@@ -68,4 +67,4 @@
  ;;             :foreign-key :parent_id
  ;;             :icon "bi bi-list"
  ;;             :label "Related Records"}]
-}
+ }

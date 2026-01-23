@@ -12,6 +12,7 @@
  :rights ["U" "A" "S"]  ;; User levels: U=User, A=Admin, S=System
  :mode :parameter-driven
  :menu-hidden? true
+ :audit? true
 
  ;; Fields auto-detected from database schema
  :fields [{:id :id :label "ID" :type :hidden}
@@ -28,10 +29,11 @@
           {:id :comision_agente :label "Comision Agente" :type :decimal}
           {:id :status :label "Status" :type :text :placeholder "Status..."}
           {:id :notas :label "Notas" :type :textarea :placeholder "Notas..."}
-          {:id :created_by :label "Created By" :type :number}
-          {:id :created_at :label "Created At" :type :datetime}
-          {:id :modified_by :label "Modified By" :type :number}
-          {:id :modified_at :label "Modified At" :type :datetime}]
+          ;; Audit columns
+          {:id :created_by :label "Created By" :type :hidden}
+          {:id :created_at :label "Created At" :type :hidden}
+          {:id :modified_by :label "Modified By" :type :hidden}
+          {:id :modified_at :label "Modified At" :type :hidden}]
 
  ;; Auto-generated queries (customize as needed)
  :queries {:list "SELECT ven.*, CONCAT(age.nombre, ' ', age.apellido_paterno) as agente_nombre, CONCAT(cli.nombre, ' ', cli.apellido_paterno) as cliente_nombre, CONCAT(cli1.nombre, ' ', cli1.apellido_paterno) as cliente_nombre, pro.titulo as propiedade_nombre FROM ventas ven LEFT JOIN agentes age ON ven.agente_id = age.id LEFT JOIN clientes cli ON ven.cliente_vendedor_id = cli.id LEFT JOIN clientes cli1 ON ven.cliente_comprador_id = cli1.id LEFT JOIN propiedades pro ON ven.propiedad_id = pro.id ORDER BY ven.id DESC"

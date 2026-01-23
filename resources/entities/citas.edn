@@ -12,6 +12,7 @@
  :rights ["U" "A" "S"]  ;; User levels: U=User, A=Admin, S=System
  :mode :parameter-driven
  :menu-hidden? true
+ :audit? true
 
  ;; Fields auto-detected from database schema
  :fields [{:id :id :label "ID" :type :hidden}
@@ -22,14 +23,18 @@
            :required? true
            :type :fk
            :fk :clientes
-           :fk-field [:nombre :apellido_paterno :apellido_materno]}
+           :fk-field [:nombre :apellido_paterno :apellido_materno]
+           :hidden-in-grid? true}
+          {:id :cliente_nombre :label "Cliente" :grid-only? true}
 
           {:id :agente_id
            :label "Agente"
            :required? true
            :type :fk
            :fk :agentes
-           :fk-field [:nombre :apellido_paterno :apellido_materno]}
+           :fk-field [:nombre :apellido_paterno :apellido_materno]
+           :hidden-in-grid? true}
+          {:id :agente_nombre :label "Agente" :grid-only? true}
 
           {:id :fecha_cita :label "Fecha Cita" :type :datetime :required? true}
           {:id :duracion_minutos :label "Duracion Minutos" :type :number :value 60}
@@ -55,13 +60,23 @@
 
           {:id :notas :label "Notas" :type :textarea :placeholder "Notas..."}
           {:id :resultado :label "Resultado" :type :textarea :placeholder "Comentarios pos-visita..."}
-          {:id :created_by :label "Created By" :type :number}
-          ; {:id :created_at :label "Created At" :type :datetime :displayonly true}
-          {:id :modified_by :label "Modified By" :type :number}
-          {:id :modified_at :label "Modified At" :type :datetime}]
+          ;; Audit columns
+          {:id :created_by :label "Created By" :type :hidden}
+          {:id :created_at :label "Created At" :type :hidden}
+          {:id :modified_by :label "Modified By" :type :hidden}
+          {:id :modified_at :label "Modified At" :type :hidden}]
 
  ;; Auto-generated queries (customize as needed)
- :queries {:list "SELECT cit.*, CONCAT(age.nombre, ' ', age.apellido_paterno) as agente_nombre, CONCAT(cli.nombre, ' ', cli.apellido_paterno) as cliente_nombre, pro.titulo as propiedade_nombre FROM citas cit LEFT JOIN agentes age ON cit.agente_id = age.id LEFT JOIN clientes cli ON cit.cliente_id = cli.id LEFT JOIN propiedades pro ON cit.propiedad_id = pro.id ORDER BY cit.id DESC"
+ :queries {:list "SELECT 
+                 cit.*, 
+                 CONCAT(age.nombre, ' ', age.apellido_paterno) as agente_nombre, 
+                 CONCAT(cli.nombre, ' ', cli.apellido_paterno) as cliente_nombre, 
+                 pro.titulo as propiedade_nombre 
+                 FROM citas cit 
+                 LEFT JOIN agentes age ON cit.agente_id = age.id 
+                 LEFT JOIN clientes cli ON cit.cliente_id = cli.id 
+                 LEFT JOIN propiedades pro ON cit.propiedad_id = pro.id 
+                 ORDER BY cit.id DESC"
            :get "SELECT * FROM citas WHERE id = ?"}
 
  ;; Available actions

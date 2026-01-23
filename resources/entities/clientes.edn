@@ -8,6 +8,7 @@
  :menu-category :clients
  :menu-order 1
  :menu-icon "bi bi-people"
+ :audit? true
 
  :fields [{:id :id :type :hidden}
 
@@ -28,16 +29,16 @@
           {:id :telefono :label "Teléfono" :type :text :maxlength 15 :placeholder "33-1234-5678"}
           {:id :celular :label "Celular" :type :text :maxlength 15 :placeholder "33-1234-5678"}
 
-          {:id :rfc 
-           :label "RFC" 
-           :type :text 
-           :maxlength 13 
+          {:id :rfc
+           :label "RFC"
+           :type :text
+           :maxlength 13
            :validation :br.validators.common/rfc-valido?}
 
-          {:id :curp 
-           :label "CURP" 
-           :type :text 
-           :maxlength 18 
+          {:id :curp
+           :label "CURP"
+           :type :text
+           :maxlength 18
            :validation :br.validators.common/curp-valida?}
 
           {:id :fecha_nacimiento :label "Fecha de Nacimiento" :type :date}
@@ -66,7 +67,12 @@
 
           {:id :notas :label "Notas" :type :textarea :rows 4 :hidden-in-grid? true}
           {:id :activo :label "Activo" :type :radio :value "T" :options [{:id "activoT" :value "T" :label "Activo"}
-                                                                         {:id "activoF" :value "F" :label "Inactivo"}]}
+                                                                         {:id "activoF" :value "F" :label "Inactivo"}]
+           ;; Audit columns
+           {:id :created_by :label "Created By" :type :hidden}
+           {:id :created_at :label "Created At" :type :hidden}
+           {:id :modified_by :label "Modified By" :type :hidden}
+           {:id :modified_at :label "Modified At" :type :hidden}}
 
    ;; Nombre completo computado
           {:id :nombre_completo :label "Nombre Completo" :type :text :grid-only? true}]

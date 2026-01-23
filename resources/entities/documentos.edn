@@ -12,26 +12,51 @@
  :rights ["U" "A" "S"]  ;; User levels: U=User, A=Admin, S=System
  :mode :parameter-driven
  :menu-hidden? true
+ :audit? true
 
  ;; Fields auto-detected from database schema
  :fields [{:id :id :label "ID" :type :hidden}
-          {:id :tipo :label "Tipo" :type :text :required? true :placeholder "Tipo..."}
-          {:id :entidad :label "Entidad" :type :text :placeholder "Entidad..."}
-          {:id :entidad_id :label "Entidad Id" :type :number}
+          {:id :tipo :label "Tipo" :type :select :required? true :options [{:value "Contrato" :label "Contrato"}
+                                                                           {:value "Escritura" :label "Escritura"}
+                                                                           {:value "INE" :label "INE"}
+                                                                           {:value "RFC" :label "RFC"}]}
+          {:id :entidad :label "Entidad" :type :select :required? true :options [{:value "Propiedad" :label "Propiedad"}
+                                                                                 {:value "Cliente" :label "Cliente"}
+                                                                                 {:value "Venta" :label "Venta"}
+                                                                                 {:value "Renta" :label "Renta"}]}
+
+          {:id :entidad_id
+           :label "Cliente"
+           :type :fk
+           :fk :clientes
+           :fk-field [:nombre :apellido_paterno :apellido_materno]
+           :hidden-in-grid? true}
+          {:id :cliente_nombre :label "Cliente" :grid-only? true}
+
+          ; {:id :entidad_id :label "Entidad Id" :type :number}
           {:id :titulo :label "Titulo" :type :text :required? true :placeholder "Titulo..."}
           {:id :descripcion :label "Descripcion" :type :textarea :placeholder "Descripcion..."}
           {:id :archivo_url :label "Archivo Url" :type :text :required? true :placeholder "Archivo Url..."}
-          {:id :tipo_archivo :label "Tipo Archivo" :type :text :placeholder "Tipo Archivo..."}
+          {:id :tipo_archivo :label "Tipo Archivo" :type :select :options [{:value "" :label "Seleccionar Tipo Archivo"}
+                                                                           {:value "PDF" :label "PDF"}
+                                                                           {:value "DOC" :label "DOC"}
+                                                                           {:value "JPG" :label "JPG"}]}
           {:id :tamano_kb :label "Tamano Kb" :type :number}
           {:id :fecha_documento :label "Fecha Documento" :type :date}
           {:id :vigencia :label "Vigencia" :type :date}
-          {:id :created_by :label "Created By" :type :number}
-          {:id :created_at :label "Created At" :type :datetime}
-          {:id :modified_by :label "Modified By" :type :number}
-          {:id :modified_at :label "Modified At" :type :datetime}]
+
+          ;; Audit columns
+          {:id :created_by :label "Created By" :type :hidden}
+          {:id :created_at :label "Created At" :type :hidden}
+          {:id :modified_by :label "Modified By" :type :hidden}
+          {:id :modified_at :label "Modified At" :type :hidden}]
 
  ;; Auto-generated queries (customize as needed)
- :queries {:list "SELECT * FROM documentos ORDER BY id DESC"
+ :queries {:list "SELECT doc.*,
+                 concat(cli.nombre,' ',cli.apellido_paterno,' ',cli.apellido_materno) as cliente_nombre 
+                 FROM documentos doc
+                 LEFT JOIN clientes cli on cli.id = doc.entidad_id
+                 ORDER BY id DESC"
            :get "SELECT * FROM documentos WHERE id = ?"}
 
  ;; Available actions

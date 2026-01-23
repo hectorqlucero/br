@@ -12,6 +12,7 @@
  :rights ["U" "A" "S"]  ;; User levels: U=User, A=Admin, S=System
  :mode :parameter-driven
  :menu-hidden? true
+ :audit? true
 
  ;; Fields auto-detected from database schema
  :fields [{:id :id :label "ID" :type :hidden}
@@ -25,8 +26,9 @@
           {:id :referencia :label "Referencia" :type :text :placeholder "Referencia..."}
           {:id :concepto :label "Concepto" :type :textarea :placeholder "Concepto..."}
           {:id :notas :label "Notas" :type :textarea :placeholder "Notas..."}
-          {:id :created_by :label "Created By" :type :number}
-          {:id :created_at :label "Created At" :type :datetime}]
+          ;; Audit columns
+          {:id :created_by :label "Created By" :type :hidden}
+          {:id :created_at :label "Created At" :type :hidden}]
 
  ;; Auto-generated queries (customize as needed)
  :queries {:list "SELECT pag.*, CONCAT(age.nombre, ' ', age.apellido_paterno) as agente_nombre, CONCAT(cli.nombre, ' ', cli.apellido_paterno) as cliente_nombre FROM pagos pag LEFT JOIN agentes age ON pag.agente_id = age.id LEFT JOIN clientes cli ON pag.cliente_id = cli.id ORDER BY pag.id DESC"

@@ -8,6 +8,7 @@
  :menu-category :clients
  :menu-order 2
  :menu-icon "bi bi-person-badge"
+ :audit? true
 
  :fields [{:id :id :type :hidden}
 
@@ -28,7 +29,12 @@
           {:id :activo :label "Activo" :type :radio :value "T" :options [{:id "activoT" :value "T" :label "Activo"}
                                                                          {:id "activoF" :value "F" :label "Inactivo"}]}
 
-          {:id :nombre_completo :label "Nombre Completo" :type :text :grid-only? true}]
+          {:id :nombre_completo :label "Nombre Completo" :type :text :grid-only? true}
+          ;; Audit column
+          {:id :created_by :label "Created By" :type :hidden}
+          {:id :created_at :label "Created At" :type :hidden}
+          {:id :modified_by :label "Modified By" :type :hidden}
+          {:id :modified_at :label "Modified At" :type :hidden}]
 
  :queries {:list "SELECT * FROM agentes WHERE activo = 'T' ORDER BY apellido_paterno"
            :get "SELECT * FROM agentes WHERE id = ?"}

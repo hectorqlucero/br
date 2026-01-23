@@ -12,6 +12,7 @@
  :rights ["U" "A" "S"]  ;; User levels: U=User, A=Admin, S=System
  :mode :parameter-driven
  :meny-hidden? true
+ :audit? true
 
  ;; Fields auto-detected from database schema
  :fields [{:id :id :label "ID" :type :hidden}
@@ -22,8 +23,9 @@
           {:id :valor_avaluo :label "Valor Avaluo" :type :decimal :required? true}
           {:id :documento_url :label "Documento Url" :type :text :placeholder "Documento Url..."}
           {:id :notas :label "Notas" :type :textarea :placeholder "Notas..."}
-          {:id :created_by :label "Created By" :type :number}
-          {:id :created_at :label "Created At" :type :datetime}]
+          ;; Audit columns
+          {:id :created_by :label "Created By" :type :hidden}
+          {:id :created_at :label "Created At" :type :hidden}]
 
  ;; Auto-generated queries (customize as needed)
  :queries {:list "SELECT ava.*, pro.titulo as propiedade_nombre FROM avaluos ava LEFT JOIN propiedades pro ON ava.propiedad_id = pro.id ORDER BY ava.id DESC"

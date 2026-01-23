@@ -1,7 +1,3 @@
--- =====================================================
--- CATÁLOGOS BASE
--- =====================================================
-
 -- Estados de México
 CREATE TABLE estados (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -371,9 +367,25 @@ CREATE TABLE IF NOT EXISTS users (
   last_login TEXT DEFAULT (datetime('now')),
   FOREIGN KEY (agente_id) REFERENCES agentes(id)
 );
+
+-- =====================================================
+-- MÓDULO DE AUDITORIA
+-- =====================================================
+CREATE TABLE IF NOT EXISTS audit_log (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    entity text NOT NULL,                           -- Entity nombre ('users', 'clientes')
+    operation text NOT NULL,                        -- Operation ('create', 'update', 'delete') 
+    data TEXT,                                      -- Serialized data (pr-str format),
+    user_id INTEGER,                                -- Usuario que ejecuto la acción
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+);
 -- =====================================================
 -- ÍNDICES
 -- =====================================================
+CREATE  INDEX idx_audit_entity ON audit_log(entity);
+CREATE  INDEX idx_audit_operation ON audit_log(operation);
+CREATE  INDEX idx_audit_user ON audit_log(user_id);
+CREATE  INDEX idx_audit_timestamp ON audit_log(timestamp);
 
 CREATE INDEX idx_propiedades_estado ON propiedades(estado_id);
 CREATE INDEX idx_propiedades_municipio ON propiedades(municipio_id);

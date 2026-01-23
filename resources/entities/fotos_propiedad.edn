@@ -12,6 +12,7 @@
  :rights ["U" "A" "S"]  ;; User levels: U=User, A=Admin, S=System
  :mode :parameter-driven
  :menu-hidden? true
+ :audit? true
 
  ;; Fields auto-detected from database schema
  :fields [{:id :id :label "ID" :type :hidden}
@@ -20,7 +21,7 @@
           {:id :descripcion :label "Descripcion" :type :text :placeholder "Descripcion..."}
           {:id :es_principal :label "Es Principal" :type :text :placeholder "Es Principal..."}
           {:id :orden :label "Orden" :type :number}
-          {:id :created_at :label "Created At" :type :datetime}]
+          {:id :created_at :label "Created At" :type :hidden}]
 
  ;; Auto-generated queries (customize as needed)
  :queries {:list "SELECT fot.*, pro.titulo as propiedade_nombre FROM fotos_propiedad fot LEFT JOIN propiedades pro ON fot.propiedad_id = pro.id ORDER BY fot.id DESC"

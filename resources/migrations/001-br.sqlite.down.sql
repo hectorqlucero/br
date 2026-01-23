@@ -1,3 +1,4 @@
+drop table if exists audit_log;
 drop table if exists usuarios;
 drop table if exists documentos;
 drop table if exists avaluos;

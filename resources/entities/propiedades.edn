@@ -8,6 +8,7 @@
  :menu-category :properties
  :menu-order 1
  :menu-icon "bi bi-house-door"
+ :audit? true
 
  :fields [{:id :id :type :hidden}
 
@@ -133,7 +134,13 @@
 
           ;; Campos de solo lectura
           {:id :visitas :label "Visitas" :type :number :hidden-in-form? true}
-          {:id :fecha_registro :label "Fecha Registro" :type :date :hidden-in-form? true}]
+          {:id :fecha_registro :label "Fecha Registro" :type :date :hidden-in-form? true}
+
+          ;; Audit columns
+          {:id :created_by :label "Created By" :type :hidden}
+          {:id :created_at :label "Created At" :type :hidden}
+          {:id :modified_by :label "Modified By" :type :hidden}
+          {:id :modified_at :label "Modified At" :type :hidden}]
 
  :queries {:list "SELECT p.*, 
                  tp.nombre as tipo_nombre,

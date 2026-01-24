@@ -4,9 +4,11 @@
    [br.handlers.home.controller :as home-controller]))
 
 (defroutes open-routes
-  (GET "/" params [] (home-controller/main params))
-  (GET "/home/login" params [] (home-controller/login params))
-  (POST "/home/login" params [] (home-controller/login-user params))
-  (GET "/home/logoff" params [] (home-controller/logoff-user params))
-  (GET "/change/password" params [] (home-controller/change-password params))
-  (POST "/change/password" params [] (home-controller/process-password params)))
+  (GET "/" req [] (home-controller/main req))
+  (GET "/home/login" req [] (home-controller/login req))
+  (POST "/home/login" req [] (home-controller/login-user req))
+  (GET "/home/logoff" req [] (home-controller/logoff-user req))
+  (GET "/change/password" req [] (home-controller/change-password req))
+  (POST "/change/password" req [] (home-controller/process-password req))
+  (GET "/property/:id" req (home-controller/property-detail req))
+  (GET "/api/municipios" req [] (home-controller/municipios-api req)))

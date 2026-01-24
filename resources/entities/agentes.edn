@@ -2,7 +2,7 @@
  :title "Agentes Inmobiliarios"
  :table "agentes"
  :connection :default
- :rights ["A" "S"]
+ :rights ["U" "A" "S"]
  :mode :parameter-driven
 
  :menu-category :clients
@@ -22,7 +22,7 @@
 
           {:id :cedula_profesional :label "Cédula Profesional" :type :text :maxlength 20}
           {:id :licencia_inmobiliaria :label "Licencia Inmobiliaria" :type :text :maxlength 50}
-          {:id :porcentaje_comision :label "% Comisión" :type :decimal :min 0 :max 100 :value 3.00}
+          {:id :porcentaje_comision :label "% Comisión" :type :decimal :min 0 :max 100 :step 0.01 :value 3.00}
 
           {:id :biografia :label "Biografía" :type :textarea :rows 5 :hidden-in-grid? true}
           {:id :foto_url :label "URL Foto" :type :text :maxlength 255 :hidden-in-grid? true}

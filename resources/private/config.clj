@@ -1,5 +1,5 @@
 {:connections
- {  ;; --- Local SQLite Database (Great for development) ---
+ {;; --- Local SQLite Database (Great for development) ---
   :sqlite {:db-type   "sqlite"
            :db-class  "org.sqlite.JDBC"
            :db-name   "db/br.sqlite"}
@@ -12,8 +12,17 @@
 
  ;; --- Application Settings ---
  :uploads      "./uploads/br/"
+ :site-moto    "Encuentra la casa de tus sueños"
+ :site-experience "Más de 20 años ayudando a familias a encontrar su hogar ideal"
  :site-name    "Bienes Raices Mexicali"
- :company-name "Ruiz Sofware Solutions"
+ :company-name "Ruiz Software Solutions"
+ :contact-email "contacto@bienesraicesmexicali.com"
+ :contact-phone "(686) 123-4567"
+ :support-email "soporte@bienesraicesmexicali.com"
+ :address "Av. Ejemplo 123, Mexicali, Baja California"
+ :facebook-url "https://www.facebook.com/bienesraicesmexicali"
+ :instagram-url "https://www.instagram.com/bienesraicesmexicali"
+ :whatsapp-url "https://wa.me/528661234567"
  :port         3000
  :tz           "US/Pacific"
  :base-url     "http://localhost:3000/"

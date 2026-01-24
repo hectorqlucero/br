@@ -202,11 +202,28 @@
 (defn seed-municipios! [conn counts estado-ids]
   (println "Inserting municipios...")
   (let [ja-id (get estado-ids "JA")
-        municipios-data [{:estado_id ja-id :nombre "Guadalajara" :activo "T"}
+        bc-id (get estado-ids "BC")
+        bs-id (get estado-ids "BS")
+        municipios-data [;; Jalisco
+                         {:estado_id ja-id :nombre "Guadalajara" :activo "T"}
                          {:estado_id ja-id :nombre "Zapopan" :activo "T"}
                          {:estado_id ja-id :nombre "Tlaquepaque" :activo "T"}
                          {:estado_id ja-id :nombre "Tonalá" :activo "T"}
-                         {:estado_id ja-id :nombre "Puerto Vallarta" :activo "T"}]
+                         {:estado_id ja-id :nombre "Puerto Vallarta" :activo "T"}
+
+                         ;; Baja California
+                         {:estado_id bc-id :nombre "Tijuana" :activo "T"}
+                         {:estado_id bc-id :nombre "Mexicali" :activo "T"}
+                         {:estado_id bc-id :nombre "Ensenada" :activo "T"}
+                         {:estado_id bc-id :nombre "Tecate" :activo "T"}
+                         {:estado_id bc-id :nombre "Playas de Rosarito" :activo "T"}
+
+                         ;; Baja California Sur
+                         {:estado_id bs-id :nombre "La Paz" :activo "T"}
+                         {:estado_id bs-id :nombre "Los Cabos" :activo "T"}
+                         {:estado_id bs-id :nombre "Comondú" :activo "T"}
+                         {:estado_id bs-id :nombre "Mulegé" :activo "T"}
+                         {:estado_id bs-id :nombre "Loreto" :activo "T"}]
         ids (reduce (fn [m mm]
                       (let [id (insert-and-find-id "municipios" mm :nombre :conn conn)]
                         (when id (swap! counts update :municipios (fnil inc 0)))
@@ -218,13 +235,28 @@
 
 (defn seed-colonias! [conn counts municipio-ids]
   (println "Inserting colonias...")
-  (let [colonias-data [{:municipio_id (municipio-ids "Guadalajara") :nombre "Colonia Americana" :codigo_postal "44160"}
+  (let [colonias-data [;; Guadalajara area
+                       {:municipio_id (municipio-ids "Guadalajara") :nombre "Colonia Americana" :codigo_postal "44160"}
                        {:municipio_id (municipio-ids "Guadalajara") :nombre "Providencia" :codigo_postal "44630"}
                        {:municipio_id (municipio-ids "Zapopan") :nombre "Ciudad del Sol" :codigo_postal "45050"}
                        {:municipio_id (municipio-ids "Zapopan") :nombre "Chapalita" :codigo_postal "45040"}
                        {:municipio_id (municipio-ids "Tlaquepaque") :nombre "Centro Tlaquepaque" :codigo_postal "45500"}
                        {:municipio_id (municipio-ids "Tonalá") :nombre "Loma Dorada" :codigo_postal "45410"}
-                       {:municipio_id (municipio-ids "Puerto Vallarta") :nombre "5 de Diciembre" :codigo_postal "48350"}]
+                       {:municipio_id (municipio-ids "Puerto Vallarta") :nombre "5 de Diciembre" :codigo_postal "48350"}
+
+                       ;; Baja California
+                       {:municipio_id (municipio-ids "Tijuana") :nombre "Centro Tijuana" :codigo_postal "22000"}
+                       {:municipio_id (municipio-ids "Mexicali") :nombre "Emiliano Zapata" :codigo_postal "21350"}
+                       {:municipio_id (municipio-ids "Ensenada") :nombre "Zona Centro" :codigo_postal "22800"}
+                       {:municipio_id (municipio-ids "Tecate") :nombre "Centro Tecate" :codigo_postal "21400"}
+                       {:municipio_id (municipio-ids "Playas de Rosarito") :nombre "Plan Libertador" :codigo_postal "22700"}
+
+                       ;; Baja California Sur
+                       {:municipio_id (municipio-ids "La Paz") :nombre "El Centenario" :codigo_postal "23000"}
+                       {:municipio_id (municipio-ids "Los Cabos") :nombre "Cabo San Lucas Centro" :codigo_postal "23450"}
+                       {:municipio_id (municipio-ids "Comondú") :nombre "Ciudad Constitución Centro" :codigo_postal "23880"}
+                       {:municipio_id (municipio-ids "Mulegé") :nombre "Santa Rosalía Centro" :codigo_postal "23880"}
+                       {:municipio_id (municipio-ids "Loreto") :nombre "Centro Loreto" :codigo_postal "23880"}]
         ids (reduce (fn [m c]
                       (let [id (insert-and-find-id "colonias" c :nombre :conn conn)]
                         (when id (swap! counts update :colonias (fnil inc 0)))
@@ -256,7 +288,10 @@
 (defn seed-agentes! [conn counts]
   (println "Inserting agentes...")
   (let [agentes-data [{:nombre "Ana" :apellido_paterno "García" :apellido_materno "López" :email "ana.garcia@inmuebles.com" :telefono "3312345678" :celular "3312345678" :cedula_profesional "CP123456" :licencia_inmobiliaria "LIC-2026-01" :porcentaje_comision 3.00 :activo "T" :biografia "Especialista en propiedades residenciales."}
-                      {:nombre "Carlos" :apellido_paterno "Martínez" :apellido_materno "Ruiz" :email "carlos.martinez@inmuebles.com" :telefono "3323456789" :celular "3323456789" :cedula_profesional "CP654321" :licencia_inmobiliaria "LIC-2026-02" :porcentaje_comision 3.00 :activo "T" :biografia "Experto en ventas y rentas comerciales."}]
+                      {:nombre "Carlos" :apellido_paterno "Martínez" :apellido_materno "Ruiz" :email "carlos.martinez@inmuebles.com" :telefono "3323456789" :celular "3323456789" :cedula_profesional "CP654321" :licencia_inmobiliaria "LIC-2026-02" :porcentaje_comision 3.00 :activo "T" :biografia "Experto en ventas y rentas comerciales."}
+                      ;; Regional agents
+                      {:nombre "Luis" :apellido_paterno "Rivera" :apellido_materno "Sánchez" :email "luis.rivera@inmuebles.com" :telefono "6641234567" :celular "6641234567" :cedula_profesional "CP789012" :licencia_inmobiliaria "LIC-2026-03" :porcentaje_comision 3.50 :activo "T" :biografia "Agente en Baja California con experiencia en propiedades de playa."}
+                      {:nombre "Mariana" :apellido_paterno "Soto" :apellido_materno "Vega" :email "mariana.soto@inmuebles.com" :telefono "6123456789" :celular "6123456789" :cedula_profesional "CP890123" :licencia_inmobiliaria "LIC-2026-04" :porcentaje_comision 3.50 :activo "T" :biografia "Agente en Baja California Sur, especializada en inmuebles vacacionales."}]
         ids (reduce (fn [m a]
                       (let [id (insert-and-find-id "agentes" a :email :conn conn)]
                         (when id (swap! counts update :agentes (fnil inc 0)))
@@ -283,7 +318,45 @@
 (defn seed-propiedades! [conn counts tipo-ids colonia-ids municipio-ids estado-ids cliente-ids agente-ids]
   (println "Inserting propiedades...")
   (let [prop-rows [{:clave "CASA-001" :titulo "Casa en Providencia" :descripcion "Hermosa casa familiar en zona exclusiva." :tipo_id (tipo-ids "Casa") :calle "Calle Robles" :numero_exterior "321" :colonia_id (colonia-ids "Providencia") :municipio_id (municipio-ids "Guadalajara") :estado_id (estado-ids "JA") :codigo_postal "44630" :terreno_m2 250.00 :construccion_m2 180.00 :recamaras 3 :banos_completos 2 :medios_banos 1 :estacionamientos 2 :niveles 2 :antiguedad_anos 5 :operacion "Venta" :precio_venta 5500000.00 :moneda "MXN" :status "Disponible" :cliente_propietario_id (cliente-ids "maria.perez@gmail.com") :agente_id (agente-ids "ana.garcia@inmuebles.com") :activo "T" :destacada "T" :fecha_registro (date-str 0) :fecha_publicacion (date-str 4) :visitas 12}
-                   {:clave "DEPTO-002" :titulo "Departamento en Ciudad del Sol" :descripcion "Departamento moderno, ideal para jóvenes profesionales." :tipo_id (tipo-ids "Departamento") :calle "Av. Patria" :numero_exterior "654" :colonia_id (colonia-ids "Ciudad del Sol") :municipio_id (municipio-ids "Zapopan") :estado_id (estado-ids "JA") :codigo_postal "45050" :terreno_m2 90.00 :construccion_m2 90.00 :recamaras 2 :banos_completos 1 :medios_banos 1 :estacionamientos 1 :niveles 1 :antiguedad_anos 2 :operacion "Renta" :precio_renta 18000.00 :moneda "MXN" :status "Disponible" :cliente_propietario_id (cliente-ids "luis.hernandez@gmail.com") :agente_id (agente-ids "carlos.martinez@inmuebles.com") :activo "T" :destacada "F" :fecha_registro (date-str 9) :fecha_publicacion (date-str 11) :visitas 8}]
+                   {:clave "DEPTO-002" :titulo "Departamento en Ciudad del Sol" :descripcion "Departamento moderno, ideal para jóvenes profesionales." :tipo_id (tipo-ids "Departamento") :calle "Av. Patria" :numero_exterior "654" :colonia_id (colonia-ids "Ciudad del Sol") :municipio_id (municipio-ids "Zapopan") :estado_id (estado-ids "JA") :codigo_postal "45050" :terreno_m2 90.00 :construccion_m2 90.00 :recamaras 2 :banos_completos 1 :medios_banos 1 :estacionamientos 1 :niveles 1 :antiguedad_anos 2 :operacion "Renta" :precio_renta 18000.00 :moneda "MXN" :status "Disponible" :cliente_propietario_id (cliente-ids "luis.hernandez@gmail.com") :agente_id (agente-ids "carlos.martinez@inmuebles.com") :activo "T" :destacada "F" :fecha_registro (date-str 9) :fecha_publicacion (date-str 11) :visitas 8}
+                   ;; Additional sample properties requested
+                   {:clave "CASA-003" :titulo "Casa con jardín en Lomas" :descripcion "Amplio jardín y área social perfecta para familias." :tipo_id (tipo-ids "Casa") :calle "Calle Lomas" :numero_exterior "12" :colonia_id (colonia-ids "Loma Dorada") :municipio_id (municipio-ids "Tonalá") :estado_id (estado-ids "JA") :codigo_postal "44620" :terreno_m2 300.00 :construccion_m2 210.00 :recamaras 4 :banos_completos 3 :estacionamientos 3 :niveles 2 :antiguedad_anos 3 :operacion "Venta" :precio_venta 4200000.00 :moneda "MXN" :status "Disponible" :agente_id (agente-ids "ana.garcia@inmuebles.com") :activo "T" :destacada "T" :fecha_registro (date-str -2) :fecha_publicacion (date-str 1) :visitas 5}
+                   {:clave "DEP-004" :titulo "Departamento moderno en Centro" :descripcion "Ubicación céntrica con acabados modernos." :tipo_id (tipo-ids "Departamento") :calle "Av. Juárez" :numero_exterior "45" :colonia_id (colonia-ids "Centro Tlaquepaque") :municipio_id (municipio-ids "Tlaquepaque") :estado_id (estado-ids "JA") :codigo_postal "44100" :construccion_m2 75.00 :recamaras 2 :banos_completos 2 :estacionamientos 1 :operacion "Renta" :precio_renta 15000.00 :moneda "MXN" :status "Disponible" :agente_id (agente-ids "carlos.martinez@inmuebles.com") :activo "T" :destacada "F" :fecha_registro (date-str -1) :fecha_publicacion (date-str 0) :visitas 2}
+                   {:clave "TER-005" :titulo "Terreno en La Primavera" :descripcion "Parcela ideal para desarrollos o inversión." :tipo_id (tipo-ids "Terreno") :calle "Carretera La Primavera" :numero_exterior "S/N" :colonia_id (colonia-ids "5 de Diciembre") :municipio_id (municipio-ids "Puerto Vallarta") :estado_id (estado-ids "JA") :codigo_postal "45100" :operacion "Venta" :precio_venta 1200000.00 :moneda "MXN" :status "Disponible" :agente_id (agente-ids "ana.garcia@inmuebles.com") :activo "T" :fecha_registro (date-str -3) :fecha_publicacion (date-str 2) :visitas 1}
+                   {:clave "OFI-006" :titulo "Oficina en Ciudad Tecnológica" :descripcion "Oficina con vista y estacionamiento disponible." :tipo_id (tipo-ids "Oficina") :calle "Paseo Tecnológico" :numero_exterior "101" :colonia_id (colonia-ids "Chapalita") :municipio_id (municipio-ids "Zapopan") :estado_id (estado-ids "JA") :codigo_postal "45110" :construccion_m2 120.00 :recamaras 0 :banos_completos 2 :estacionamientos 2 :operacion "Ambos" :precio_venta 3000000.00 :precio_renta 25000.00 :moneda "MXN" :status "Disponible" :agente_id (agente-ids "carlos.martinez@inmuebles.com") :activo "T" :fecha_registro (date-str -4) :fecha_publicacion (date-str 3) :visitas 0}
+                   ;; Baja California
+                   {:clave "BC-TIJ-101" :titulo "Casa en Centro Tijuana" :descripcion "Casa céntrica con patio y múltiples comodidades." :tipo_id (tipo-ids "Casa") :calle "Calle 1" :numero_exterior "45" :colonia_id (colonia-ids "Centro Tijuana") :municipio_id (municipio-ids "Tijuana") :estado_id (estado-ids "BC") :codigo_postal "22000" :terreno_m2 200.00 :construccion_m2 160.00 :recamaras 3 :banos_completos 2 :estacionamientos 2 :niveles 2 :operacion "Venta" :precio_venta 4200000.00 :moneda "MXN" :status "Disponible" :agente_id (agente-ids "ana.garcia@inmuebles.com") :activo "T" :fecha_registro (date-str -2) :fecha_publicacion (date-str 1) :visitas 3}
+                   {:clave "BC-MXL-102" :titulo "Departamento en Emiliano Zapata" :descripcion "Departamento moderno cerca de servicios." :tipo_id (tipo-ids "Departamento") :calle "Av. Reforma" :numero_exterior "210" :colonia_id (colonia-ids "Emiliano Zapata") :municipio_id (municipio-ids "Mexicali") :estado_id (estado-ids "BC") :codigo_postal "21350" :construccion_m2 85.00 :recamaras 2 :banos_completos 1 :estacionamientos 1 :operacion "Renta" :precio_renta 12000.00 :moneda "MXN" :status "Disponible" :agente_id (agente-ids "carlos.martinez@inmuebles.com") :activo "T" :fecha_registro (date-str -10) :fecha_publicacion (date-str -7) :visitas 1}
+                   {:clave "BC-ENS-103" :titulo "Terreno en Zona Centro" :descripcion "Terreno urbano ideal para construcción." :tipo_id (tipo-ids "Terreno") :calle "Carretera Ensenada" :numero_exterior "S/N" :colonia_id (colonia-ids "Zona Centro") :municipio_id (municipio-ids "Ensenada") :estado_id (estado-ids "BC") :codigo_postal "22800" :operacion "Venta" :precio_venta 950000.00 :moneda "MXN" :status "Disponible" :agente_id (agente-ids "ana.garcia@inmuebles.com") :activo "T" :fecha_registro (date-str -20) :fecha_publicacion (date-str -15) :visitas 0}
+                   {:clave "BC-TEC-104" :titulo "Casa en Tecate" :descripcion "Casa familiar en zona tranquila." :tipo_id (tipo-ids "Casa") :calle "Av. Hidalgo" :numero_exterior "77" :colonia_id (colonia-ids "Centro Tecate") :municipio_id (municipio-ids "Tecate") :estado_id (estado-ids "BC") :codigo_postal "21400" :construccion_m2 140.00 :recamaras 3 :banos_completos 2 :estacionamientos 1 :operacion "Venta" :precio_venta 2200000.00 :moneda "MXN" :status "Disponible" :agente_id (agente-ids "carlos.martinez@inmuebles.com") :activo "T" :fecha_registro (date-str -8) :fecha_publicacion (date-str -2) :visitas 2}
+                   {:clave "BC-ROS-105" :titulo "Departamento frente al mar" :descripcion "Departamento con vista a la playa en Rosarito." :tipo_id (tipo-ids "Departamento") :calle "Blvd. Costero" :numero_exterior "10" :colonia_id (colonia-ids "Plan Libertador") :municipio_id (municipio-ids "Playas de Rosarito") :estado_id (estado-ids "BC") :codigo_postal "22700" :construccion_m2 95.00 :recamaras 2 :banos_completos 2 :estacionamientos 1 :operacion "Renta" :precio_renta 18000.00 :moneda "MXN" :status "Disponible" :agente_id (agente-ids "ana.garcia@inmuebles.com") :activo "T" :fecha_registro (date-str -3) :fecha_publicacion (date-str 1) :visitas 4}
+
+                   ;; Baja California Sur
+                   {:clave "BS-LAP-201" :titulo "Casa en El Centenario" :descripcion "Casa de playa con jardín y alberca." :tipo_id (tipo-ids "Casa") :calle "Paseo del Mar" :numero_exterior "5" :colonia_id (colonia-ids "El Centenario") :municipio_id (municipio-ids "La Paz") :estado_id (estado-ids "BS") :codigo_postal "23000" :terreno_m2 320.00 :construccion_m2 220.00 :recamaras 4 :banos_completos 3 :estacionamientos 3 :operacion "Venta" :precio_venta 7800000.00 :moneda "MXN" :status "Disponible" :agente_id (agente-ids "ana.garcia@inmuebles.com") :activo "T" :fecha_registro (date-str -6) :fecha_publicacion (date-str -1) :visitas 6}
+                   {:clave "BS-CAB-202" :titulo "Condominio en Cabo San Lucas" :descripcion "Condominio moderno en el corazón de Cabo San Lucas." :tipo_id (tipo-ids "Departamento") :calle "Marina" :numero_exterior "88" :colonia_id (colonia-ids "Cabo San Lucas Centro") :municipio_id (municipio-ids "Los Cabos") :estado_id (estado-ids "BS") :codigo_postal "23450" :construccion_m2 110.00 :recamaras 3 :banos_completos 3 :estacionamientos 2 :operacion "Venta" :precio_venta 9800000.00 :moneda "MXN" :status "Disponible" :agente_id (agente-ids "carlos.martinez@inmuebles.com") :activo "T" :fecha_registro (date-str -2) :fecha_publicacion (date-str 2) :visitas 8}
+                   {:clave "BS-CMD-203" :titulo "Terreno en Ciudad Constitución" :descripcion "Terreno ideal para agricultura o vivienda." :tipo_id (tipo-ids "Terreno") :calle "Carretera Transpeninsular" :numero_exterior "S/N" :colonia_id (colonia-ids "Ciudad Constitución Centro") :municipio_id (municipio-ids "Comondú") :estado_id (estado-ids "BS") :codigo_postal "23880" :operacion "Venta" :precio_venta 450000.00 :moneda "MXN" :status "Disponible" :agente_id (agente-ids "ana.garcia@inmuebles.com") :activo "T" :fecha_registro (date-str -12) :fecha_publicacion (date-str -8) :visitas 0}
+                   {:clave "BS-MUL-204" :titulo "Casa en Santa Rosalía" :descripcion "Casa con vista al mar en Santa Rosalía." :tipo_id (tipo-ids "Casa") :calle "Malecón" :numero_exterior "23" :colonia_id (colonia-ids "Santa Rosalía Centro") :municipio_id (municipio-ids "Mulegé") :estado_id (estado-ids "BS") :codigo_postal "23880" :construccion_m2 140.00 :recamaras 3 :banos_completos 2 :operacion "Venta" :precio_venta 1850000.00 :moneda "MXN" :status "Disponible" :agente_id (agente-ids "carlos.martinez@inmuebles.com") :activo "T" :fecha_registro (date-str -7) :fecha_publicacion (date-str -3) :visitas 1}
+                   {:clave "BS-LRT-205" :titulo "Departamento en Loreto Centro" :descripcion "Departamento ideal para turistas y renta vacacional." :tipo_id (tipo-ids "Departamento") :calle "Calle Principal" :numero_exterior "2" :colonia_id (colonia-ids "Centro Loreto") :municipio_id (municipio-ids "Loreto") :estado_id (estado-ids "BS") :codigo_postal "23880" :construccion_m2 70.00 :recamaras 1 :banos_completos 1 :operacion "Renta" :precio_renta 9000.00 :moneda "MXN" :status "Disponible" :agente_id (agente-ids "ana.garcia@inmuebles.com") :activo "T" :fecha_registro (date-str -4) :fecha_publicacion (date-str 1) :visitas 2}
+
+                   ;; Extra Guadalajara properties
+                   {:clave "GDL-007" :titulo "Casa moderna en Providencia" :descripcion "Residencia con acabados de lujo y jardín." :tipo_id (tipo-ids "Casa") :calle "Av. Guadalupe" :numero_exterior "88" :colonia_id (colonia-ids "Providencia") :municipio_id (municipio-ids "Guadalajara") :estado_id (estado-ids "JA") :codigo_postal "44630" :terreno_m2 260.00 :construccion_m2 200.00 :recamaras 4 :banos_completos 3 :estacionamientos 3 :operacion "Venta" :precio_venta 8200000.00 :moneda "MXN" :status "Disponible" :agente_id (agente-ids "luis.rivera@inmuebles.com") :activo "T" :fecha_registro (date-str -10) :fecha_publicacion (date-str -2) :visitas 6}
+                   {:clave "ZAP-008" :titulo "Townhouse en Zapopan" :descripcion "Townhouse con uso mixto y acabados contemporáneos." :tipo_id (tipo-ids "Casa") :calle "Av. Acueducto" :numero_exterior "120" :colonia_id (colonia-ids "Chapalita") :municipio_id (municipio-ids "Zapopan") :estado_id (estado-ids "JA") :codigo_postal "45040" :construccion_m2 180.00 :recamaras 3 :banos_completos 2 :estacionamientos 2 :operacion "Venta" :precio_venta 5200000.00 :moneda "MXN" :status "Disponible" :agente_id (agente-ids "mariana.soto@inmuebles.com") :activo "T" :fecha_registro (date-str -6) :fecha_publicacion (date-str -1) :visitas 4}
+                   {:clave "PV-009" :titulo "Departamento frente al mar en Puerto Vallarta" :descripcion "Departamento con vista al mar y acceso a puerto." :tipo_id (tipo-ids "Departamento") :calle "Malecon" :numero_exterior "500" :colonia_id (colonia-ids "5 de Diciembre") :municipio_id (municipio-ids "Puerto Vallarta") :estado_id (estado-ids "JA") :codigo_postal "48350" :construccion_m2 120.00 :recamaras 2 :banos_completos 2 :estacionamientos 1 :operacion "Venta" :precio_venta 9500000.00 :moneda "MXN" :status "Disponible" :agente_id (agente-ids "luis.rivera@inmuebles.com") :activo "T" :fecha_registro (date-str -20) :fecha_publicacion (date-str -10) :visitas 10}
+
+                   ;; Baja California extras (3 per municipality)
+                   {:clave "TIJ-110" :titulo "Casa en La Cacho" :descripcion "Casa remodelada cerca del centro de Tijuana." :tipo_id (tipo-ids "Casa") :calle "Calle Independencia" :numero_exterior "10" :colonia_id (colonia-ids "Centro Tijuana") :municipio_id (municipio-ids "Tijuana") :estado_id (estado-ids "BC") :codigo_postal "22010" :construccion_m2 140.00 :recamaras 3 :banos_completos 2 :estacionamientos 1 :operacion "Venta" :precio_venta 3200000.00 :moneda "MXN" :status "Disponible" :agente_id (agente-ids "luis.rivera@inmuebles.com") :activo "T" :fecha_registro (date-str -7) :fecha_publicacion (date-str -2) :visitas 2}
+                   {:clave "TIJ-111" :titulo "Departamento céntrico Tijuana" :descripcion "Departamento a pasos de restaurantes y servicios." :tipo_id (tipo-ids "Departamento") :calle "Av. Revolución" :numero_exterior "55" :colonia_id (colonia-ids "Centro Tijuana") :municipio_id (municipio-ids "Tijuana") :estado_id (estado-ids "BC") :codigo_postal "22000" :construccion_m2 78.00 :recamaras 2 :banos_completos 1 :estacionamientos 1 :operacion "Renta" :precio_renta 9000.00 :moneda "MXN" :status "Disponible" :agente_id (agente-ids "luis.rivera@inmuebles.com") :activo "T" :fecha_registro (date-str -12) :fecha_publicacion (date-str -8) :visitas 1}
+                   {:clave "MXL-112" :titulo "Casa en Emiliano Zapata" :descripcion "Casa con patio y acceso rápido a servicios." :tipo_id (tipo-ids "Casa") :calle "Av. Reforma" :numero_exterior "300" :colonia_id (colonia-ids "Emiliano Zapata") :municipio_id (municipio-ids "Mexicali") :estado_id (estado-ids "BC") :codigo_postal "21350" :construccion_m2 150.00 :recamaras 3 :banos_completos 2 :estacionamientos 2 :operacion "Venta" :precio_venta 1850000.00 :moneda "MXN" :status "Disponible" :agente_id (agente-ids "luis.rivera@inmuebles.com") :activo "T" :fecha_registro (date-str -9) :fecha_publicacion (date-str -4) :visitas 2}
+                   {:clave "ENS-113" :titulo "Terreno cerca del mar" :descripcion "Terreno ideal para vivienda vacacional en Ensenada." :tipo_id (tipo-ids "Terreno") :calle "Carretera Tijuana-Ensenada" :numero_exterior "S/N" :colonia_id (colonia-ids "Zona Centro") :municipio_id (municipio-ids "Ensenada") :estado_id (estado-ids "BC") :codigo_postal "22800" :operacion "Venta" :precio_venta 750000.00 :moneda "MXN" :status "Disponible" :agente_id (agente-ids "mariana.soto@inmuebles.com") :activo "T" :fecha_registro (date-str -18) :fecha_publicacion (date-str -14) :visitas 0}
+                   {:clave "TEC-114" :titulo "Casa en Tecate Centro" :descripcion "Casa tradicional con patio central." :tipo_id (tipo-ids "Casa") :calle "Av. Hidalgo" :numero_exterior "12" :colonia_id (colonia-ids "Centro Tecate") :municipio_id (municipio-ids "Tecate") :estado_id (estado-ids "BC") :codigo_postal "21400" :construccion_m2 120.00 :recamaras 3 :banos_completos 1 :estacionamientos 1 :operacion "Venta" :precio_venta 1650000.00 :moneda "MXN" :status "Disponible" :agente_id (agente-ids "mariana.soto@inmuebles.com") :activo "T" :fecha_registro (date-str -11) :fecha_publicacion (date-str -5) :visitas 1}
+                   {:clave "ROS-115" :titulo "Departamento Rosarito" :descripcion "Departamento a pasos de la playa." :tipo_id (tipo-ids "Departamento") :calle "Blvd. Costero" :numero_exterior "22" :colonia_id (colonia-ids "Plan Libertador") :municipio_id (municipio-ids "Playas de Rosarito") :estado_id (estado-ids "BC") :codigo_postal "22700" :construccion_m2 85.00 :recamaras 2 :banos_completos 1 :operacion "Renta" :precio_renta 16000.00 :moneda "MXN" :status "Disponible" :agente_id (agente-ids "luis.rivera@inmuebles.com") :activo "T" :fecha_registro (date-str -3) :fecha_publicacion (date-str 1) :visitas 3}
+
+                   ;; Baja California Sur extras
+                   {:clave "LAP-210" :titulo "Casa El Centenario - 2" :descripcion "Casa amplia con vista y fácil acceso a la playa." :tipo_id (tipo-ids "Casa") :calle "Paseo del Mar" :numero_exterior "12" :colonia_id (colonia-ids "El Centenario") :municipio_id (municipio-ids "La Paz") :estado_id (estado-ids "BS") :codigo_postal "23000" :terreno_m2 400.00 :construccion_m2 260.00 :recamaras 5 :banos_completos 4 :estacionamientos 3 :operacion "Venta" :precio_venta 12500000.00 :moneda "MXN" :status "Disponible" :agente_id (agente-ids "mariana.soto@inmuebles.com") :activo "T" :fecha_registro (date-str -2) :fecha_publicacion (date-str 0) :visitas 4}
+                   {:clave "CAB-211" :titulo "Departamento en Cabo San Lucas" :descripcion "Departamento con marina y amenidades." :tipo_id (tipo-ids "Departamento") :calle "Marina" :numero_exterior "120" :colonia_id (colonia-ids "Cabo San Lucas Centro") :municipio_id (municipio-ids "Los Cabos") :estado_id (estado-ids "BS") :codigo_postal "23450" :construccion_m2 130.00 :recamaras 3 :banos_completos 3 :estacionamientos 2 :operacion "Venta" :precio_venta 14200000.00 :moneda "MXN" :status "Disponible" :agente_id (agente-ids "luis.rivera@inmuebles.com") :activo "T" :fecha_registro (date-str -4) :fecha_publicacion (date-str 1) :visitas 6}
+                   {:clave "CMD-212" :titulo "Terreno en Ciudad Constitución - 2" :descripcion "Excelente lote para cultivo o vivienda." :tipo_id (tipo-ids "Terreno") :calle "Carretera Transpeninsular" :numero_exterior "S/N" :colonia_id (colonia-ids "Ciudad Constitución Centro") :municipio_id (municipio-ids "Comondú") :estado_id (estado-ids "BS") :codigo_postal "23880" :operacion "Venta" :precio_venta 650000.00 :moneda "MXN" :status "Disponible" :agente_id (agente-ids "mariana.soto@inmuebles.com") :activo "T" :fecha_registro (date-str -14) :fecha_publicacion (date-str -10) :visitas 0}
+                   {:clave "MUL-213" :titulo "Casa en Santa Rosalía - 2" :descripcion "Casa céntrica con acabados rústicos." :tipo_id (tipo-ids "Casa") :calle "Malecón" :numero_exterior "45" :colonia_id (colonia-ids "Santa Rosalía Centro") :municipio_id (municipio-ids "Mulegé") :estado_id (estado-ids "BS") :codigo_postal "23880" :construccion_m2 130.00 :recamaras 3 :banos_completos 2 :operacion "Venta" :precio_venta 1650000.00 :moneda "MXN" :status "Disponible" :agente_id (agente-ids "mariana.soto@inmuebles.com") :activo "T" :fecha_registro (date-str -5) :fecha_publicacion (date-str -1) :visitas 1}
+                   {:clave "LRT-214" :titulo "Departamento en Loreto - 2" :descripcion "Departamento con buena ubicación turística." :tipo_id (tipo-ids "Departamento") :calle "Calle Hidalgo" :numero_exterior "10" :colonia_id (colonia-ids "Centro Loreto") :municipio_id (municipio-ids "Loreto") :estado_id (estado-ids "BS") :codigo_postal "23880" :construccion_m2 60.00 :recamaras 1 :banos_completos 1 :operacion "Renta" :precio_renta 8500.00 :moneda "MXN" :status "Disponible" :agente_id (agente-ids "luis.rivera@inmuebles.com") :activo "T" :fecha_registro (date-str -6) :fecha_publicacion (date-str -2) :visitas 2}]
         ids (reduce (fn [m p]
                       (let [id (insert-and-find-id "propiedades" p :clave :conn conn)]
                         (when id (swap! counts update :propiedades (fnil inc 0)))
@@ -293,16 +366,86 @@
     (println "Inserted" (count ids) "propiedades")
     ids))
 
+(defn valid-image-url?
+  "Return true if the given URL responds with an image Content-Type (HTTP HEAD or fallback GET).
+   Uses a short timeout and returns false on any error."
+  [url]
+  (try
+    (let [u (java.net.URL. url)]
+      (try
+        (let [^java.net.HttpURLConnection conn (.openConnection u)]
+          (.setConnectTimeout conn 5000)
+          (.setReadTimeout conn 5000)
+          (.setRequestMethod conn "HEAD")
+          (.setInstanceFollowRedirects conn true)
+          (.connect conn)
+          (let [code (.getResponseCode conn)
+                ct (.getContentType conn)]
+            (and (<= 200 code 299)
+                 ct
+                 (clojure.string/starts-with? (or ct "") "image/"))))
+        (catch Exception _
+          ;; fallback to GET for hosts that disallow HEAD
+          (try
+            (let [^java.net.HttpURLConnection conn2 (.openConnection u)]
+              (.setRequestMethod conn2 "GET")
+              (.setRequestProperty conn2 "Range" "bytes=0-0")
+              (.setConnectTimeout conn2 5000)
+              (.setReadTimeout conn2 5000)
+              (.setInstanceFollowRedirects conn2 true)
+              (.connect conn2)
+              (let [code2 (.getResponseCode conn2)
+                    ct2 (.getContentType conn2)]
+                (and (<= 200 code2 299)
+                     ct2
+                     (clojure.string/starts-with? (or ct2 "") "image/"))))
+            (catch Exception e
+              (println "[WARN] valid-image-url? fallback failed for" url ":" (.getMessage e))
+              false)))
+
+        (catch Exception e
+          (println "[WARN] valid-image-url? failed for" url ":" (.getMessage e))
+          false)))))
+
+(defn insert-photos-for-property!
+  [prop-id urls & {:keys [conn desired-count] :or {desired-count 4}}]
+  (let [candidates (take desired-count urls)
+        valid-urls (filter valid-image-url? candidates)
+        to-insert (map-indexed (fn [idx url]
+                                 {:propiedad_id prop-id
+                                  :url url
+                                  :descripcion ""
+                                  :es_principal (if (zero? idx) "T" "F")
+                                  :orden (inc idx)})
+                               valid-urls)]
+    (doseq [photo to-insert]
+      (try
+        (crud/Insert :fotos_propiedad photo :conn conn)
+        (catch Exception e
+          (println "[WARN] insert photo failed for" (:url photo) ":" (.getMessage e)))))
+    (count to-insert)))
+
 (defn seed-fotos! [conn counts propiedad-ids]
   (println "Inserting fotos_propiedad...")
-  (doseq [f [{:propiedad_id (propiedad-ids "CASA-001") :url "https://example.com/fotos/casa-001-1.jpg" :descripcion "Fachada principal" :es_principal "T" :orden 1}
-             {:propiedad_id (propiedad-ids "CASA-001") :url "https://example.com/fotos/casa-001-2.jpg" :descripcion "Sala" :es_principal "F" :orden 2}
-             {:propiedad_id (propiedad-ids "DEPTO-002") :url "https://example.com/fotos/depto-002-1.jpg" :descripcion "Vista desde el balcón" :es_principal "T" :orden 1}]]
-    (try
-      (crud/Insert :fotos_propiedad f :conn conn)
-      (swap! counts update :fotos_propiedad (fnil inc 0))
-      (catch Exception e
-        (println "[WARN] fotos_propiedad insert failed:" (.getMessage e))))))
+  ;; Use a rotating pool of Unsplash images and assign 4 per property for variety and availability
+  (let [pool ["https://images.unsplash.com/photo-1542314831-068cd1dbfeeb"
+              "https://images.unsplash.com/photo-1524758631624-e2822e304c36"
+              "https://images.unsplash.com/photo-1444065381814-865dc9da92c0"
+              "https://images.unsplash.com/photo-1494526585095-c41746248156"
+              "https://images.unsplash.com/photo-1502672023488-70e25813eb80"
+              "https://images.unsplash.com/photo-1472214103451-9374bd1c798e"
+              "https://images.unsplash.com/photo-1519710164239-da123dc03ef4"
+              "https://images.unsplash.com/photo-1472224371017-08207f84aaae"
+              "https://images.unsplash.com/photo-1502673530728-f79b4cab31b1"
+              "https://images.unsplash.com/photo-1484154218962-a197022b5858"]]
+    (doseq [[idx clave] (map-indexed vector (keys propiedad-ids))]
+      (when-let [pid (propiedad-ids clave)]
+        (let [urls (mapv #(nth pool (mod (+ idx %) (count pool))) (range 4))
+              inserted (insert-photos-for-property! pid urls :conn conn :desired-count 4)]
+          (swap! counts update :fotos_propiedad (fnil + 0) inserted)
+          (when (< inserted 4)
+            (println "[WARN] only" inserted "valid images found for" clave)))))
+    (println "Done inserting fotos_propiedad.")))
 
 (defn seed-ventas! [conn counts propiedad-ids cliente-ids agente-ids]
   (println "Inserting ventas...")
@@ -405,4 +548,9 @@
         @counts))))
 
 (comment
-  (seed-migration-tables!)) ;; Only run when you want new date centric data.  Solo correlo cuando quieras datos nuevos basado en la fecha que lo corriste.
+    ;; To reseed, evaluate in a REPL or with clojure -e:
+  (br.models.cdb/seed-migration-tables! :localdb)
+    ;; This call is intentionally commented out to avoid accidental execution.
+  )
+
+

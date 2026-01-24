@@ -58,6 +58,7 @@
           {:id :calle :label "Calle" :type :text :maxlength 200}
           {:id :numero_exterior :label "Núm. Exterior" :type :text :maxlength 10}
           {:id :numero_interior :label "Núm. Interior" :type :text :maxlength 10}
+
           {:id :colonia_id
            :label "Colonia"
            :type :fk

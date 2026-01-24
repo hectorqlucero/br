@@ -16,19 +16,88 @@
 
  ;; Fields auto-detected from database schema
  :fields [{:id :id :label "ID" :type :hidden}
-          {:id :propiedad_id :label "Propiedades ID" :type :hidden}
-          {:id :cliente_comprador_id :label "Clientes ID" :type :hidden}
-          {:id :cliente_vendedor_id :label "Clientes ID" :type :hidden}
-          {:id :agente_id :label "Agentes ID" :type :hidden}
-          {:id :fecha_venta :label "Fecha Venta" :type :date :required? true}
-          {:id :precio_venta :label "Precio Venta" :type :decimal :required? true}
-          {:id :enganche :label "Enganche" :type :decimal}
-          {:id :financiamiento :label "Financiamiento" :type :text :placeholder "Financiamiento..."}
-          {:id :institucion_financiera :label "Institucion Financiera" :type :text :placeholder "Institucion Financiera..."}
-          {:id :comision_total :label "Comision Total" :type :decimal}
-          {:id :comision_agente :label "Comision Agente" :type :decimal}
-          {:id :status :label "Status" :type :text :placeholder "Status..."}
-          {:id :notas :label "Notas" :type :textarea :placeholder "Notas..."}
+
+          {:id :propiedad_id
+           :label "Propiedad"
+           :type :fk
+           :fk :propiedades
+           :fk-field [:clave :titulo]
+           :hidden-in-grid? true}
+          {:id :propiedades_nombre :label "Propiedad" :grid-only? true}
+
+          {:id :cliente_comprador_id
+           :label "Comprador"
+           :type :fk
+           :fk :clientes
+           :fk-field [:nombre :apellido_paterno :apellido_materno]
+           :hidden-in-grid? true}
+          {:id :cliente_comprador :label "Comprador" :grid-only? true}
+
+          {:id :cliente_vendedor_id
+           :label "Vendedor"
+           :type :fk
+           :fk :clientes
+           :fk-field [:nombre :apellido_patrerno :apellido_materno]
+           :hidden-in-grid? true}
+          {:id :cliente_vendedor :label "Vendedor" :grid-only? true}
+
+          {:id :agente_id
+           :label "Agentes"
+           :type :fk
+           :fk :agentes
+           :fk-field [:nombre :apellido_paterno :apellido_materno]
+           :hidden-in-grid? true}
+          {:id :agente_nombre :label "Agentes" :grid-only? true}
+
+          {:id :fecha_venta
+           :label "Fecha Venta"
+           :type :date :required? true}
+
+          {:id :precio_venta
+           :label "Precio Venta"
+           :type :decimal :min 0 :step 0.01
+           :required? true}
+
+          {:id :enganche
+           :label "Enganche"
+           :type :decimal :min 0 :step 0.01
+           :required? false}
+
+          {:id :financiamiento
+           :label "Financiamiento"
+           :type :radio
+           :value "F"
+           :options [{:id "ActiveT" :label "True" :value "T"}
+                     {:id "ActiveF" :label "False" :value "F"}]
+           :placeholder "Financiamiento..."}
+
+          {:id :institucion_financiera
+           :label "Institucion Financiera"
+           :type :text
+           :placeholder "Institucion Financiera..."}
+
+          {:id :comision_total
+           :label "Comision Total"
+           :type :decimal :min 0 :step 0.01
+           :required? false}
+
+          {:id :comision_agente
+           :label "Comision Agente"
+           :type :decimal :min 0 :step 0.01
+           :required? false}
+
+          {:id :status
+           :label "Status"
+           :type :select
+           :required? false
+           :value "En Proceso"
+           :option [{:value "Escriturada" :label "Escriturada"}
+                    {:value "Cancelada" :label "Cancelada"}]}
+
+          {:id :notas
+           :label "Notas"
+           :type :textarea
+           :placeholder "Notas..."}
           ;; Audit columns
           {:id :created_by :label "Created By" :type :hidden}
           {:id :created_at :label "Created At" :type :hidden}
@@ -36,7 +105,18 @@
           {:id :modified_at :label "Modified At" :type :hidden}]
 
  ;; Auto-generated queries (customize as needed)
- :queries {:list "SELECT ven.*, CONCAT(age.nombre, ' ', age.apellido_paterno) as agente_nombre, CONCAT(cli.nombre, ' ', cli.apellido_paterno) as cliente_nombre, CONCAT(cli1.nombre, ' ', cli1.apellido_paterno) as cliente_nombre, pro.titulo as propiedade_nombre FROM ventas ven LEFT JOIN agentes age ON ven.agente_id = age.id LEFT JOIN clientes cli ON ven.cliente_vendedor_id = cli.id LEFT JOIN clientes cli1 ON ven.cliente_comprador_id = cli1.id LEFT JOIN propiedades pro ON ven.propiedad_id = pro.id ORDER BY ven.id DESC"
+ :queries {:list "SELECT 
+                 ven.*, 
+                 CONCAT(age.nombre, ' ', age.apellido_paterno) as agente_nombre, 
+                 CONCAT(cli.nombre, ' ', cli.apellido_paterno) as cliente_comprador, 
+                 CONCAT(cli1.nombre, ' ', cli1.apellido_paterno) as cliente_vendedor, 
+                 pro.titulo as propiedades_nombre 
+                 FROM ventas ven 
+                 LEFT JOIN agentes age ON ven.agente_id = age.id 
+                 LEFT JOIN clientes cli ON ven.cliente_vendedor_id = cli.id 
+                 LEFT JOIN clientes cli1 ON ven.cliente_comprador_id = cli1.id 
+                 LEFT JOIN propiedades pro ON ven.propiedad_id = pro.id 
+                 ORDER BY ven.id DESC"
            :get "SELECT * FROM ventas WHERE id = ?"}
 
  ;; Available actions

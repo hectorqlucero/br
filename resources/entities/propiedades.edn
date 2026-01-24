@@ -167,7 +167,7 @@
                 LEFT JOIN agentes a ON p.agente_id = a.id
                 WHERE p.id = ?"}
 
- :actions {:new true :edit true :delete true}
+ :actions {:new true :edit true :delete false}
 
  :hooks {:before-load :br.hooks.propiedades/cargar-opciones
          :before-save :br.hooks.propiedades/validar-propiedad

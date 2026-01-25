@@ -220,6 +220,7 @@
     [:div.row.mt-1
      [:div.col-12.text-center
       [:small.text-white-50 (str "© " (.. (java.time.LocalDate/now) getYear) " " (:company-name config) " - All rights reserved")]]]]])
+
 (defn home-view
   "Render the home page with a list of properties (expects properties vector)"
   [properties estados municipios selected]

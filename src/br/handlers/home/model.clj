@@ -1,6 +1,7 @@
 (ns br.handlers.home.model
   (:require
-   [br.models.crud :refer [db Query Update]]))
+   [br.models.crud :refer [db Query Update]]
+   [clojure.string :as st]))
 
 (defn get-user
   [username]
@@ -15,10 +16,6 @@
   (let [where-clause ["username = ?" username]
         result (first (Update db :users {:password password} where-clause))]
     (Integer. result)))
-
-(comment
-  (get-user "sistema@gmail.com")
-  (get-users))
 
 ;; Properties and photos helpers
 (defn get-photos-by-property
@@ -54,7 +51,7 @@
          params (cond-> []
                   estado-id (conj estado-id)
                   municipio-id (conj municipio-id))
-         sql (str base-sql (when (seq conds) (str " " (clojure.string/join " " conds))) " ORDER BY p.destacada DESC, p.fecha_registro DESC" (when limit " LIMIT ?"))
+         sql (str base-sql (when (seq conds) (str " " (st/join " " conds))) " ORDER BY p.destacada DESC, p.fecha_registro DESC" (when limit " LIMIT ?"))
          qparams (if limit (into [sql] (conj params limit)) (into [sql] params))
          rows (Query db qparams)]
      (map (fn [r]

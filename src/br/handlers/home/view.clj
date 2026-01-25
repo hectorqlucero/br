@@ -1,8 +1,7 @@
 (ns br.handlers.home.view
   (:require
    [br.models.form :refer [login-form password-form]]
-   [br.models.crud :refer [config get-config]]
-   [clojure.java.io :as io]
+   [br.models.crud :refer [config]]
    [clojure.string :as str]))
 
 ;; Local CSS/JS used by this view. Keep small and theme-aware using Bootstrap CSS variables.

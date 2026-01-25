@@ -128,7 +128,8 @@
            :fk :clientes
            :fk-field [:nombre :apellido_paterno :apellido_materno]}
 
-          {:id :destacada :label "Propiedad Destacada" :type :checkbox :value "F"}
+          {:id :destacada :label "Propiedad Destacada" :type :radio :value "F" :options [{:id "destacadaF" :value "F" :label "No"}
+                                                                                         {:id "destacadaT" :value "T" :label "Si"}]}
           {:id :activo :label "Activo" :type :radio :value "T" :options [{:id "activoT" :value "T" :label "Activo"}
                                                                          {:id "activoF" :value "F" :label "Inactivo"}]}
 

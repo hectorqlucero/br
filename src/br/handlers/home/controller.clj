@@ -7,7 +7,6 @@
                                   main-view property-detail-view]]
    [br.layout :refer [application error-404]]
    [br.models.util :refer [get-session-id json-response]]
-   [br.models.crud :refer [db Query]]
    [ring.util.response :refer [redirect]]))
 
 (defn main
@@ -47,10 +46,6 @@
         property (get-property-by-id id)
         content (if property (property-detail-view property) (error-404 "Propiedad no encontrada" "/"))]
     (application request title ok js content)))
-
-
-
-
 
 (defn login
   [request]

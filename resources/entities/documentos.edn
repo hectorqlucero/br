@@ -37,6 +37,7 @@
           {:id :titulo :label "Titulo" :type :text :required? true :placeholder "Titulo..."}
           {:id :descripcion :label "Descripcion" :type :textarea :placeholder "Descripcion..."}
           {:id :archivo_url :label "Archivo Url" :type :text :required? true :placeholder "Archivo Url..."}
+          ; {:id :pdflink :label "Archivo Url" :grid-only? true}
           {:id :tipo_archivo :label "Tipo Archivo" :type :select :options [{:value "" :label "Seleccionar Tipo Archivo"}
                                                                            {:value "PDF" :label "PDF"}
                                                                            {:value "DOC" :label "DOC"}
@@ -69,12 +70,13 @@
  ;; Lifecycle hooks for business logic
  ;; Senior developer: Implement these in src/br/hooks/documentos.clj
  ;; Uncomment and implement as needed:
- ;; :hooks {:before-load :br.hooks.documentos/before-load
- ;;         :after-load :br.hooks.documentos/after-load
- ;;         :before-save :br.hooks.documentos/before-save
- ;;         :after-save :br.hooks.documentos/after-save
- ;;         :before-delete :br.hooks.documentos/before-delete
- ;;         :after-delete :br.hooks.documentos/after-delete}
+ :hooks {         ; :before-load :br.hooks.documentos/before-load
+         :after-load :br.hooks.documentos/after-load
+         ; :before-save :br.hooks.documentos/before-save
+         ; :after-save :br.hooks.documentos/after-save
+         ; :before-delete :br.hooks.documentos/before-delete
+         ; :after-delete :br.hooks.documentos/after-delete
+         }
 
  ;; Subgrids (parent-child relationships)
  ;; Uncomment if this entity has child records:

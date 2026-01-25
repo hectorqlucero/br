@@ -22,6 +22,8 @@
            :type :fk
            :fk :propiedades
            :fk-field [:clave :titulo]
+           :fk-sort [:titulo]
+           :fk-filter [:activo "T"]
            :hidden-in-grid? true}
           {:id :propiedades_nombre :label "Propiedad" :grid-only? true}
 
@@ -29,7 +31,9 @@
            :label "Comprador"
            :type :fk
            :fk :clientes
-           :fk-field [:nombre :apellido_paterno :apellido_materno]
+           :fk-field [:nombre :apellido_paterno :apellido_materno :tipo]
+           :fk-sort [:nombre :apellido_paterno]
+           :fk-filter [:tipo "Comprador"]
            :hidden-in-grid? true}
           {:id :cliente_comprador :label "Comprador" :grid-only? true}
 
@@ -37,7 +41,9 @@
            :label "Vendedor"
            :type :fk
            :fk :clientes
-           :fk-field [:nombre :apellido_patrerno :apellido_materno]
+           :fk-field [:nombre :apellido_paterno :apellido_materno :tipo]
+           :fk-sort [:nombre :apellido_paterno :apellido_materno]
+           :fk-filter [:tipo "Vendedor"]
            :hidden-in-grid? true}
           {:id :cliente_vendedor :label "Vendedor" :grid-only? true}
 

@@ -16,16 +16,61 @@
 
  ;; Fields auto-detected from database schema
  :fields [{:id :id :label "ID" :type :hidden}
-          {:id :propiedad_id :label "Propiedades ID" :type :hidden}
-          {:id :cliente_arrendatario_id :label "Clientes ID" :type :hidden}
-          {:id :cliente_arrendador_id :label "Clientes ID" :type :hidden}
-          {:id :agente_id :label "Agentes ID" :type :hidden}
+
+          {:id :propiedad_id
+           :label "Propiedad"
+           :type :fk
+           :fk :propiedades
+           :fk-field [:clave :titulo]
+           :fk-sort [:titulo]
+           :fk-filter [:activo "T"]
+           :hidden-in-grid? true}
+          {:id :propiedad_nombre :label "Propiedad" :grid-only? true}
+
+          {:id :cliente_arrendatario_id
+           :label "Arrendatario"
+           :type :fk
+           :fk :clientes
+           :fk-field [:nombre :apellido_paterno :apellido_materno :tipo]
+           :fk-sort [:nombre :apellido_paterno :apellido_materno]
+           :fk-filter [:tipo "Arrendatario"]
+           :hidden-in-grid? true}
+          {:id :cliente_arrendatario :label "Arrendatario" :grid-only? true}
+
+          {:id :cliente_arrendador_id
+           :label "Arrendador"
+           :type :fk
+           :fk :clientes
+           :fk-field [:nombre :apellido_paterno :apellido_materno :tipo]
+           :fk-sort [:nombre :apellido_paterno :apellido_materno]
+           :fk-filter [:tipo "Arrendador"]
+           :hidden-in-grid? true}
+          {:id :cliente_arrendador :label "Arrendador" :grid-only? true}
+
+          {:id :agente_id
+           :label "Agente"
+           :type :fk
+           :fk :agentes
+           :fk-field [:nombre :apellido_paterno :apellido_materno]
+           :fk-sort [:nombre :apellido_paterno :apellido_materno]
+           :fk-filter [:activo "T"]
+           :hidden-in-grid? true}
+          {:id :agente_nombre :label "Agente" :grid-only? true}
+
           {:id :fecha_inicio :label "Fecha Inicio" :type :date :required? true}
           {:id :fecha_fin :label "Fecha Fin" :type :date :required? true}
-          {:id :renta_mensual :label "Renta Mensual" :type :decimal :required? true}
-          {:id :deposito :label "Deposito" :type :decimal}
-          {:id :dia_pago :label "Dia Pago" :type :number}
-          {:id :status :label "Status" :type :text :placeholder "Status..."}
+          {:id :renta_mensual :label "Renta Mensual" :type :decimal :min 0 :step 0.01 :required? true}
+          {:id :deposito :label "Deposito" :type :decimal :min 0 :step 0.01}
+          {:id :dia_pago :label "Dia Pago" :type :number :min 0 :step 1}
+
+          {:id :status :label "Status"
+           :type :select
+           :value "Activa"
+           :required? true
+           :options [{:value "Activa" :label "Activa"}
+                     {:value "Finalizada" :label "Finalizada"}
+                     {:value "Cancelada" :label "Cancelada"}]}
+
           {:id :notas :label "Notas" :type :textarea :placeholder "Notas..."}
           ;; Audit columns
           {:id :created_by :label "Created By" :type :hidden}
@@ -34,7 +79,18 @@
           {:id :modified_at :label "Modified At" :type :hidden}]
 
  ;; Auto-generated queries (customize as needed)
- :queries {:list "SELECT ren.*, CONCAT(age.nombre, ' ', age.apellido_paterno) as agente_nombre, CONCAT(cli.nombre, ' ', cli.apellido_paterno) as cliente_nombre, CONCAT(cli1.nombre, ' ', cli1.apellido_paterno) as cliente_nombre, pro.titulo as propiedade_nombre FROM rentas ren LEFT JOIN agentes age ON ren.agente_id = age.id LEFT JOIN clientes cli ON ren.cliente_arrendador_id = cli.id LEFT JOIN clientes cli1 ON ren.cliente_arrendatario_id = cli1.id LEFT JOIN propiedades pro ON ren.propiedad_id = pro.id ORDER BY ren.id DESC"
+ :queries {:list "SELECT ren.*, 
+                 CONCAT (pro.clave,' ',pro.titulo) as propiedad_nombre,
+                 CONCAT(age.nombre, ' ', age.apellido_paterno) as agente_nombre, 
+                 CONCAT(cli.nombre, ' ', cli.apellido_paterno) as cliente_arrendador, 
+                 CONCAT(cli1.nombre, ' ', cli1.apellido_paterno) as cliente_arrendatario, 
+                 pro.titulo as propiedade_nombre 
+                 FROM rentas ren 
+                 LEFT JOIN agentes age ON ren.agente_id = age.id 
+                 LEFT JOIN clientes cli ON ren.cliente_arrendador_id = cli.id 
+                 LEFT JOIN clientes cli1 ON ren.cliente_arrendatario_id = cli1.id 
+                 LEFT JOIN propiedades pro ON ren.propiedad_id = pro.id 
+                 ORDER BY ren.id DESC"
            :get "SELECT * FROM rentas WHERE id = ?"}
 
  ;; Available actions

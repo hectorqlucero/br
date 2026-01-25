@@ -37,7 +37,6 @@
           {:id :titulo :label "Titulo" :type :text :required? true :placeholder "Titulo..."}
           {:id :descripcion :label "Descripcion" :type :textarea :placeholder "Descripcion..."}
           {:id :archivo_url :label "Archivo Url" :type :text :required? true :placeholder "Archivo Url..."}
-          ; {:id :pdflink :label "Archivo Url" :grid-only? true}
           {:id :tipo_archivo :label "Tipo Archivo" :type :select :options [{:value "" :label "Seleccionar Tipo Archivo"}
                                                                            {:value "PDF" :label "PDF"}
                                                                            {:value "DOC" :label "DOC"}

@@ -2,6 +2,7 @@
   (:require
    [buddy.hashers :as hashers]
    [clojure.string :as st]
+   [br.i18n.core :as i18n]
    [br.handlers.home.model :refer [get-user get-users update-password get-featured-properties get-property-by-id get-estados get-municipios-by-estado]]
    [br.handlers.home.view :refer [change-password-view home-view
                                   main-view property-detail-view]]
@@ -49,7 +50,7 @@
 
 (defn login
   [request]
-  (let [title "Login"
+  (let [title (i18n/tr request :auth/login)
         ok (get-session-id request)
         js nil
         content (main-view title)]
@@ -57,37 +58,54 @@
 
 (defn login-user
   [{:keys [params session]}]
-  (let [username (:username params)
+  (let [title (i18n/tr params :auth/login)
+        username (:username params)
         password (:password params)
         row (first (get-user username))
-        active (:active row)]
+        active (:active row)
+        return-path "/"
+        back-msg (i18n/tr params :common/back)
+        error-general (i18n/tr params :error/general)
+        content-error-general [:p error-general [:a {:href return-path} back-msg]]
+        error-forbidden (i18n/tr params :auth/invalid-credentials)
+        content-error-forbidden [:p error-forbidden [:a {:href return-path} back-msg]]]
     (if (= active "T")
       (if (hashers/check password (:password row))
         (-> (redirect "/")
             (assoc :session (assoc session :user_id (:id row))))
-        (error-404 "Incorrect Username and or Password!" "/"))
-      (error-404 "User is not active!" "/"))))
+        (application params title 0 nil content-error-general))
+      (application params title 0 nil content-error-forbidden))))
 
 (defn change-password
   [request]
-  (let [title "Change Password"
+  (let [title (i18n/tr request :auth/change-password)
         ok (get-session-id request)
         js nil
         content (change-password-view title)]
     (application request title ok js content)))
 
 (defn process-password
-  [{:keys [params]}]
-  (let [username (:email params)
+  [{:keys [params] :as request}]
+  (let [title (i18n/tr request :auth/login)
+        username (:email params)
         password (:password params)
-        row (first (get-user username))]
+        row (first (get-user username))
+        result (or (update-password username (hashers/derive password)) 0)
+        return-path "/home/login"
+        back-msg (i18n/tr request :common/back)
+        error-general (i18n/tr request :error/general)
+        content-error-general [:p error-general [:a {:href return-path} back-msg]]
+        error-not-found (i18n/tr request :error/not-found)
+        content-error-not-found [:p error-not-found [:a {:href return-path} back-msg]]
+        success-updated (i18n/tr request :success/updated)
+        content-success [:p success-updated [:a {:href return-path} back-msg]]]
     (if (and row (= (:active row) "T"))
       (if (and password (not (st/blank? password)))
-        (if (> (update-password username (hashers/derive password)) 0)
-          (error-404 "Your password was changed successfully!" "/home/login")
-          (error-404 "Unable to change password!" "/home/login"))
-        (error-404 "Password cannot be blank!" "/home/login"))
-      (error-404 "Unable to change password!" "/home/login"))))
+        (if (> result 0)
+          (application request title 0 nil content-success)
+          (application request title 0 nil content-error-general))
+        (application request title 0 nil content-error-not-found))
+      (application request title 0 nil content-error-general))))
 
 (defn logoff-user
   [_]

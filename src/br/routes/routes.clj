@@ -5,6 +5,7 @@
 
 (defroutes open-routes
   (GET "/" req [] (home-controller/main req))
+  (GET "/home" req [] (home-controller/home req))
   (GET "/home/login" req [] (home-controller/login req))
   (POST "/home/login" req [] (home-controller/login-user req))
   (GET "/home/logoff" req [] (home-controller/logoff-user req))

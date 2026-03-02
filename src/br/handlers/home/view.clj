@@ -324,3 +324,10 @@
 (defn change-password-view
   [title]
   (password-form title))
+
+(defn private-home
+  [title]
+  [:div.container
+   [:div.card
+    [:div.card-body
+     [:h5.card-title title]]]])

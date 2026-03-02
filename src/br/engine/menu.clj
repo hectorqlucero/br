@@ -82,8 +82,8 @@
   [entity-info]
   (let [auto-category (categorize-entity (:entity entity-info))
         final-category (if (= (:category entity-info) :admin)
-                        auto-category
-                        (:category entity-info))]
+                         auto-category
+                         (:category entity-info))]
     (assoc entity-info :category final-category)))
 
 (defn generate-menu-items
@@ -122,17 +122,17 @@
   []
   (let [menu-items (generate-menu-items)
         sorted-categories (sort-by #(get-in default-categories [% :order] 999)
-                                  (keys menu-items))
+                                   (keys menu-items))
         dropdowns (into {}
-                       (map-indexed
-                        (fn [idx category]
-                          [category
-                           (generate-dropdown-config
-                            category
-                            (get menu-items category)
-                            idx)])
-                        sorted-categories))]
-    {:nav-links [["/" "Home"]]
+                        (map-indexed
+                         (fn [idx category]
+                           [category
+                            (generate-dropdown-config
+                             category
+                             (get menu-items category)
+                             idx)])
+                         sorted-categories))]
+    {:nav-links [["/home" "Home"]]
      :dropdowns dropdowns}))
 
 (defn get-menu-config
@@ -149,17 +149,17 @@
 (comment
   ;; Test entity discovery
   (discover-entities)
-  
+
   ;; Test single entity info
   (get-entity-info "clientes")
-  
+
   ;; Test categorization
   (categorize-entity :clientes)
   (categorize-entity :propiedades)
   (categorize-entity :pagos_renta)
-  
+
   ;; Generate full menu
   (clojure.pprint/pprint (generate-full-menu-config))
-  
+
   ;; Test menu items by category
   (generate-menu-items))

@@ -5,7 +5,7 @@
    [br.i18n.core :as i18n]
    [br.handlers.home.model :refer [get-user get-users update-password get-featured-properties get-property-by-id get-estados get-municipios-by-estado]]
    [br.handlers.home.view :refer [change-password-view home-view
-                                  main-view property-detail-view]]
+                                  main-view property-detail-view private-home]]
    [br.layout :refer [application error-404]]
    [br.models.util :refer [get-session-id json-response]]
    [ring.util.response :refer [redirect]]))
@@ -13,7 +13,7 @@
 (defn main
   [request]
   (let [title "Home"
-        ok (get-session-id request)
+        ok -1
         js nil
         params (:params request)]
     (try
@@ -46,6 +46,14 @@
         js nil
         property (get-property-by-id id)
         content (if property (property-detail-view property) (error-404 "Propiedad no encontrada" "/"))]
+    (application request title ok js content)))
+
+(defn home
+  [request]
+  (let [title "Bienvenido"
+        ok (get-session-id request)
+        js nil
+        content (private-home title)]
     (application request title ok js content)))
 
 (defn login

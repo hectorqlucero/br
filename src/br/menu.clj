@@ -23,8 +23,7 @@
 
 (comment
   ;; Test menu generation
-  (clojure.pprint/pprint menu-config)
   (clojure.pprint/pprint (get-menu-config))
-  
+
   ;; Force menu refresh (useful during development)
   (auto-menu/refresh-menu!))

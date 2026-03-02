@@ -10,7 +10,20 @@
 
 (def custom-dropdowns
   "Custom dropdown menus"
-  {})
+  {:Reports
+   {:id "navdrop20"
+    :data-id "Reports"
+    :label "Reportes"
+    :items [["/reports/users" "Usuarios"]
+            ["/reports/propiedades" "Propiedades"]
+            ["/reports/ventas" "Ventas"]
+            ["/reports/rentas" "Rentas"]
+            ["/reports/clientes" "Clientes"]
+            ["/reports/agentes" "Agentes"]
+            ["/reports/leads" "Prospectos"]
+            ["/reports/comisiones" "Comisiones"]
+            ["/reports/citas" "Citas"]
+            ["/reports/pagos"]]}})
 
 ;; Merge custom items with auto-generated (if needed)
 (defn get-menu-config
@@ -23,6 +36,7 @@
 
 (comment
   ;; Test menu generation
+  (clojure.pprint/pprint menu-config)
   (clojure.pprint/pprint (get-menu-config))
 
   ;; Force menu refresh (useful during development)

@@ -63,6 +63,14 @@
           {:id :deposito :label "Deposito" :type :decimal :min 0 :step 0.01}
           {:id :dia_pago :label "Dia Pago" :type :number :min 0 :step 1}
 
+          {:id :incremento_anual
+           :label "Incremento Anual (%)"
+           :type :decimal :min 0 :max 100 :step 0.01 :value 0}
+
+          {:id :poliza_arrendamiento
+           :label "Póliza de Arrendamiento"
+           :type :text :maxlength 100}
+
           {:id :status :label "Status"
            :type :select
            :value "Activa"

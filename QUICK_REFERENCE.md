@@ -2,7 +2,7 @@
 
 ## **Quick Start:** Running the App
 
-**Note:** Port and database are configured in `resources/private/config.clj`
+**Note:** Port and database are configured in `resources/config/app-config.edn`
 
 ### Development (Auto-Reload) - RECOMMENDED 
 ```bash
@@ -30,7 +30,7 @@ java -jar target/uberjar/rs.jar
 
 ## **Configuration:** Configuration
 
-**Location:** `resources/private/config.clj`
+**Location:** `resources/config/app-config.edn`
 
 The config file is included with your project and uses your project name automatically.
 Just update passwords and connection settings as needed.
@@ -164,7 +164,7 @@ lein ancient
 
 ---
 
-## 🌐 URLs (After Login)
+## URLs (After Login)
 
 ### Authentication
 - **Login:** http://localhost:8080/home/login
@@ -386,7 +386,9 @@ WebGen supports these field types in entity configurations:
  :label "Property"
  :type :fk
  :fk :property
- :fk-field [:titulo :estado :contacto]}
+ :fk-field [:titulo :estado :contacto]
+ :fk-sort [:titulo :estado]
+ :fk-filter [:activo "T"]}
 
  ;; Dropdown with Database Values
  ;; Create a query in model
@@ -395,6 +397,7 @@ WebGen supports these field types in entity configurations:
 
  (defn get-categories []
    (crud/Query "SELECT id as value, name AS label FROM categories ORDER BY name" :conn :default)) ; :conn :default if not used defaults to default connection
+
  ;; In entity config
  {:id :category_id
   :label "Category"

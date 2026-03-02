@@ -48,14 +48,14 @@
                           (map #(str (get row % "")))
                           (str/join separator)))]
 
-      (cons {:value "" :label "-- Select --"}
+      (cons {:value "" :label (str "-- " (i18n/tr nil :common/select) " --")}
             (map (fn [row]
                    {:value (str (:id row))
                     :label (label-fn row)})
                  rows)))
     (catch Exception e
       (println "[WARN] Could not load enhanced FK options for" fk-entity ":" (.getMessage e))
-      [{:value "" :label "-- Select --"}])))
+      [{:value "" :label (str "-- " (i18n/tr nil :common/select) " --")}])))
 
 (defn- populate-fk-options
   "Enhanced population with optional sort/filter parameters.
@@ -146,7 +146,7 @@
                          :id (name id)
                          :name (name id)
                          :required required?
-                         :placeholder (or placeholder "Enter password...")
+                         :placeholder (or placeholder (str label "..."))
                          :value field-value})
 
       :date
@@ -228,13 +228,28 @@
 
       :file
       ;; File input with preview
-      (let [filename (if (and (string? field-value) (re-find #"^<img" field-value))
+      (let [filename (cond
+                       ;; Hiccup img vector case: extract src
+                       (and (vector? field-value)
+                            (keyword? (first field-value))
+                            (= (first field-value) :img))
+                       (when-let [attrs (second field-value)]
+                         (when-let [src (:src attrs)]
+                           (-> src
+                               (clojure.string/split #"\?")
+                               first
+                               (clojure.string/replace (:path crud/config) ""))))
+
+                       ;; Old HTML string case: parse src from img tag
+                       (and (string? field-value) (re-find #"^<img" field-value))
                        (when-let [match (re-find #"src='([^']+)'" field-value)]
                          (-> (second match)
                              (clojure.string/split #"\?")
                              first
                              (clojure.string/replace (:path crud/config) "")))
-                       field-value)]
+
+                       ;; Plain filename string
+                       :else field-value)]
         [:div.mb-3
          [:label.form-label.fw-semibold {:for (name id)} label
           (when required? [:span.text-danger.ms-1 "*"])]
@@ -311,21 +326,20 @@
 
 (defn render-dashboard
   "Renders a read-only dashboard for an entity."
-  [entity rows]
+  [request title entity rows]
   (let [config (config/get-entity-config entity)
         entity-name (name entity)
-        title (:title config)
         table-id (str entity-name "_dashboard")
         fields (build-fields-map entity)
         custom-dashboard-fn (get-in config [:ui :dashboard-fn])]
     (if custom-dashboard-fn
       (custom-dashboard-fn entity rows)
-      (grid/build-dashboard title rows table-id fields))))
+      (grid/build-dashboard request title rows table-id fields))))
 
 (defn render-report
   "Renders a report view (alias for dashboard)."
-  [entity rows]
-  (render-dashboard entity rows))
+  [request title entity rows]
+  (render-dashboard request title entity rows))
 
 (defn render-subgrid
   "Renders a subgrid for a parent-child relationship."

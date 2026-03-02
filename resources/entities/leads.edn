@@ -1,0 +1,132 @@
+{:entity :leads
+ :title "Prospectos"
+ :table "leads"
+ :connection :default
+ :rights ["U" "A" "S"]
+ :mode :parameter-driven
+
+ :menu-category :clients
+ :menu-order 3
+ :menu-icon "bi bi-person-plus"
+ :audit? true
+
+ :fields [{:id :id :type :hidden}
+
+          ;; Datos del prospecto
+          {:id :nombre :label "Nombre(s)" :type :text :required? true :maxlength 100}
+          {:id :apellido_paterno :label "Apellido Paterno" :type :text :maxlength 50}
+          {:id :apellido_materno :label "Apellido Materno" :type :text :maxlength 50}
+
+          {:id :email :label "Email" :type :email :maxlength 100}
+          {:id :telefono :label "Teléfono" :type :text :maxlength 15}
+          {:id :celular :label "Celular" :type :text :maxlength 15}
+
+          ;; Origen del lead
+          {:id :origen
+           :label "Origen"
+           :type :select
+           :options [{:value "Sitio Web" :label "Sitio Web"}
+                     {:value "Facebook" :label "Facebook"}
+                     {:value "Instagram" :label "Instagram"}
+                     {:value "Referencia" :label "Referencia"}
+                     {:value "Llamada" :label "Llamada Telefónica"}
+                     {:value "Visita" :label "Visita Presencial"}
+                     {:value "Otro" :label "Otro"}]}
+
+          ;; Interés
+          {:id :tipo_interes
+           :label "Tipo de Interés"
+           :type :select
+           :options [{:value "Compra" :label "Comprar"}
+                     {:value "Renta" :label "Rentar"}
+                     {:value "Venta" :label "Vender"}
+                     {:value "Ambos" :label "Compra y Renta"}]}
+
+          {:id :propiedad_id
+           :label "Propiedad de Interés"
+           :type :fk
+           :fk :propiedades
+           :fk-field [:clave :titulo]
+           :hidden-in-grid? true}
+
+          {:id :presupuesto_min
+           :label "Presupuesto Mínimo"
+           :type :decimal :min 0}
+
+          {:id :presupuesto_max
+           :label "Presupuesto Máximo"
+           :type :decimal :min 0}
+
+          ;; Ubicación buscada
+          {:id :estado_id
+           :label "Estado de Interés"
+           :type :fk
+           :fk :estados
+           :fk-field [:nombre]
+           :hidden-in-grid? true}
+
+          {:id :municipio_id
+           :label "Municipio de Interés"
+           :type :fk
+           :fk :municipios
+           :fk-field [:nombre]
+           :hidden-in-grid? true}
+
+          ;; Seguimiento
+          {:id :agente_id
+           :label "Agente Asignado"
+           :type :fk
+           :fk :agentes
+           :fk-field [:nombre :apellido_paterno]
+           :hidden-in-grid? true}
+
+          {:id :status
+           :label "Estatus"
+           :type :select
+           :value "Nuevo"
+           :options [{:value "Nuevo" :label "Nuevo"}
+                     {:value "Contactado" :label "Contactado"}
+                     {:value "Interesado" :label "Interesado"}
+                     {:value "Visita Programada" :label "Visita Programada"}
+                     {:value "Negociación" :label "En Negociación"}
+                     {:value "Cerrado" :label "Cerrado (Cliente)"}
+                     {:value "Perdido" :label "Perdido"}]}
+
+          {:id :ultimo_contacto
+           :label "Último Contacto"
+           :type :datetime}
+
+          {:id :proxima_accion
+           :label "Próxima Acción"
+           :type :textarea :rows 2}
+
+          {:id :notas :label "Notas" :type :textarea :rows 3 :hidden-in-grid? true}
+
+          {:id :fecha_registro :label "Fecha Registro" :type :datetime :hidden-in-form? true}
+
+          {:id :activo :label "Activo" :type :radio :value "T" :options [{:id "activoT" :value "T" :label "Activo"}
+                                                                         {:id "activoF" :value "F" :label "Inactivo"}]}
+
+          ;; Audit columns
+          {:id :created_by :label "Created By" :type :hidden}
+          {:id :created_at :label "Created At" :type :hidden}
+          {:id :modified_by :label "Modified By" :type :hidden}
+          {:id :modified_at :label "Modified At" :type :hidden}]
+
+ :queries {:list "SELECT l.*, 
+                 e.nombre as estado_nombre,
+                 m.nombre as municipio_nombre,
+                 CONCAT(a.nombre, ' ', a.apellido_paterno) as agente_nombre
+          FROM leads l
+          LEFT JOIN estados e ON l.estado_id = e.id
+          LEFT JOIN municipios m ON l.municipio_id = m.id
+          LEFT JOIN agentes a ON l.agente_id = a.id
+          WHERE l.activo = 'T'
+          ORDER BY l.fecha_registro DESC"
+
+           :get "SELECT * FROM leads WHERE id = ?"}
+
+ :actions {:new true :edit true :delete true}
+
+ :hooks {:before-save :br.hooks.leads/validar-lead
+         :after-save :br.hooks.leads/asignar-agente}}

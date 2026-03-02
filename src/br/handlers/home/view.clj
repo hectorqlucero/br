@@ -327,7 +327,7 @@
 
 (defn private-home
   [title]
-  [:div.container
-   [:div.card
+  [:div.container.text-center.text-capitalize.w50
+   [:div.card.bg-light
     [:div.card-body
-     [:h5.card-title title]]]])
+     [:h5.card-title.text-primary title]]]])

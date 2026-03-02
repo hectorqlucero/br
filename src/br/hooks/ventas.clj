@@ -6,7 +6,8 @@
    See: HOOKS_GUIDE.md for detailed documentation and examples.
    Example: src/br/hooks/alquileres.clj
    
-   Uncomment the hooks you need and implement the logic.")
+   Uncomment the hooks you need and implement the logic."
+  (:require [br.models.crud :as crud]))
 
 ;; =============================================================================
 ;; Validators
@@ -96,9 +97,20 @@
    Args: [entity-id params] - Saved record ID and data
    Returns: {:success true}"
   [entity-id params]
-  ;; TODO: Add post-save logic
-  (println "[INFO] Ventas saved successfully. ID:" entity-id)
-  {:success true})
+  (let [status (:status params)
+        propiedad-id (:propiedad_id params)]
+
+     ;; Cuando la venta se escritura, cambiar status de propiedad a Vendida
+    (when (and entity-id propiedad-id (= status "Escriturada"))
+      (try
+        (crud/Query!
+         ["UPDATE propiedades SET status = 'Vendida' WHERE id = ?" propiedad-id])
+        (println "[INFO] Propiedad" propiedad-id "marcada como Vendida")
+        (catch Exception e
+          (println "[ERROR] Error actualizando status de propiedad:" (.getMessage e)))))
+
+    (println "[INFO] Ventas saved successfully. ID:" entity-id)
+    {:success true}))
 
 (defn before-delete
   "Hook executed before deleting a record.

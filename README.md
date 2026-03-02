@@ -1,10 +1,4 @@
-# How to run br - Realstate System
-- git clone
-- cd to your clone dir and type lein with-profile dev run
-
-# Doc below is for the webgen framework. You may need it for reference...
-
-# webgen - Parameter-Driven Enterprise Application
+# br - Parameter-Driven Enterprise Application
 
 This project was generated using the WebGen framework template from Clojars.
 
@@ -14,12 +8,12 @@ See [QUICKSTART.md](QUICKSTART.md) for detailed setup instructions.
 
 ### 1. Configure Database
 
-Edit `resources/private/config.clj` with your database settings:
+Edit `resources/config/app-config.edn` with your database settings (or create `resources/private/app-config.edn` to override):
 
 ```bash
 cd br
-# Edit config.clj - update passwords and database names as needed
-nano resources/private/config.clj
+# Edit app-config.edn - update passwords and database names as needed
+nano resources/config/app-config.edn
 ```
 
 The file comes with sensible defaults using SQLite and your project name.
@@ -101,6 +95,8 @@ WebGen supports a comprehensive set of field types for building complex forms:
            :type :fk         
            :fk :categories   ; :categories is the table name
            :fk-field [:name] ; you can have more than one ex. [:name :email :phone]
+           :fk-sort [:name]
+           :fk-filter [:name "Albert"]
            :required? true}
            
            ;; Create a query in model
@@ -164,7 +160,7 @@ WebGen supports a comprehensive set of field types for building complex forms:
 ## License
 
 MIT License - see LICENSE file for details.
-# Port configurable in resources/private/config.clj
+# Port configurable in resources/config/app-config.edn
 ```
 
 ### **4. Create Your First Entity**
@@ -207,7 +203,7 @@ Visit `/admin/products` - **Full CRUD interface ready!**
               ↓
 ┌─────────────────────────────────────┐
 │  Engine (src/br/engine/)      │
-│  → config.clj   - Load configs      │
+│  → app-config.edn - Load configs    │
 │  → query.clj    - Execute queries   │
 │  → crud.clj     - CRUD operations   │
 │  → render.clj   - UI rendering      │
@@ -302,7 +298,7 @@ MIT License - See [LICENSE](LICENSE) for details.
 
 ---
 
-## **Highlights:** **Why webgen Framework?**
+## **Highlights:** **Why RS Framework?**
 
 ### **Traditional Approach**
 - 81 generated files
@@ -310,7 +306,7 @@ MIT License - See [LICENSE](LICENSE) for details.
 - 4 hours per entity
 - Spaghetti code
 
-### **webgen Framework**
+### **RS Framework**
 - 27 config files
 - Never lose changes
 - 10 minutes per entity

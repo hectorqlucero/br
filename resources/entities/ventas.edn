@@ -92,13 +92,27 @@
            :type :decimal :min 0 :step 0.01
            :required? false}
 
+          {:id :comision_pagada
+           :label "Comisión Pagada"
+           :type :radio :value "F" :options [{:id "comPagF" :value "F" :label "No"}
+                                             {:id "comPagT" :value "T" :label "Si"}]}
+
+          {:id :fecha_escrituracion
+           :label "Fecha de Escrituración"
+           :type :date}
+
+          {:id :notario
+           :label "Notario"
+           :type :text :maxlength 200}
+
           {:id :status
            :label "Status"
            :type :select
            :required? false
            :value "En Proceso"
-           :option [{:value "Escriturada" :label "Escriturada"}
-                    {:value "Cancelada" :label "Cancelada"}]}
+           :options [{:value "En Proceso" :label "En Proceso"}
+                     {:value "Escriturada" :label "Escriturada"}
+                     {:value "Cancelada" :label "Cancelada"}]}
 
           {:id :notas
            :label "Notas"

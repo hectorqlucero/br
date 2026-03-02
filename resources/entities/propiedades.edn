@@ -84,8 +84,16 @@
                                                                         {:id "gymT" :value "T" :label "Si"}]}
           {:id :seguridad_24h :label "Seguridad 24h" :type :radio :value "F" :options [{:id "s24F" :value "F" :label "No"}
                                                                                        {:id "s24T" :value "T" :label "Si"}]}
+          {:id :balcon :label "Balcón" :type :radio :value "F" :options [{:id "balconF" :value "F" :label "No"}
+                                                                         {:id "balconT" :value "T" :label "Si"}]}
+          {:id :cuarto_servicio :label "Cuarto de Servicio" :type :radio :value "F" :options [{:id "csF" :value "F" :label "No"}
+                                                                                              {:id "csT" :value "T" :label "Si"}]}
+          {:id :area_juegos :label "Área de Juegos" :type :radio :value "F" :options [{:id "ajF" :value "F" :label "No"}
+                                                                                      {:id "ajT" :value "T" :label "Si"}]}
+          {:id :salon_eventos :label "Salón de Eventos" :type :radio :value "F" :options [{:id "seF" :value "F" :label "No"}
+                                                                                          {:id "seT" :value "T" :label "Si"}]}
 
-          ;; Comercial
+           ;; Comercial
           {:id :operacion
            :label "Operación"
            :type :select

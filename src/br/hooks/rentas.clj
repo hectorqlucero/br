@@ -1,12 +1,13 @@
 (ns br.hooks.rentas
-  "Business logic hooks for rentas entity.
+  "Business logic hooks for rents entity.
    
    SENIOR DEVELOPER: Implement custom business logic here.
    
    See: HOOKS_GUIDE.md for detailed documentation and examples.
    Example: src/br/hooks/alquileres.clj
    
-   Uncomment the hooks you need and implement the logic.")
+   Uncomment the hooks you need and implement the logic."
+  (:require [br.models.crud :as crud]))
 
 ;; =============================================================================
 ;; Validators
@@ -96,9 +97,20 @@
    Args: [entity-id params] - Saved record ID and data
    Returns: {:success true}"
   [entity-id params]
-  ;; TODO: Add post-save logic
-  (println "[INFO] Rentas saved successfully. ID:" entity-id)
-  {:success true})
+  (let [status (:status params)
+        propiedad-id (:propiedad_id params)]
+
+    ;; Cuando la renta se activa, cambiar status de propiedad a Rentada
+    (when (and entity-id propiedad-id (= status "Activa"))
+      (try
+        (crud/Query!
+         ["UPDATE propiedades SET status = 'Rentada' WHERE id = ?" propiedad-id])
+        (println "[INFO] Propiedad" propiedad-id "marcada como Rentada")
+        (catch Exception e
+          (println "[ERROR] Error actualizando status de propiedad:" (.getMessage e)))))
+
+    (println "[INFO] Rentas saved successfully. ID:" entity-id)
+    {:success true}))
 
 (defn before-delete
   "Hook executed before deleting a record.

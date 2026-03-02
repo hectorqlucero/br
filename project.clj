@@ -34,13 +34,13 @@
                  [ring/ring-defaults "0.7.0"]
                  [ring/ring-devel "1.15.3"]
                  [ring/ring-codec "1.3.0"]]
-       :main ^:skip-aot br.core
-       :aot [br.core]
+  :main ^:skip-aot br.core
+  :aot [br.core]
   :plugins [[lein-ancient "0.7.0"]
             [lein-pprint "1.3.2"]]
-  :uberjar-name "rs.jar"
+  :uberjar-name "br.jar"
   :target-path "target/%s"
-       :ring {:handler br.core
+  :ring {:handler br.core
          :auto-reload? true
          :auto-refresh? false}
   :resource-paths ["shared" "resources"]
@@ -63,5 +63,5 @@
             "copy-data" ["run" "-m" "br.db.migrator" "--"]}
   :profiles {:uberjar {:aot :all
                        :jvm-opts ["-Dclojure.compiler.direct-linking=true"]}
-               :dev {:source-paths ["src" "dev"]
-                      :main br.dev}})
+             :dev {:source-paths ["src" "dev"]
+                   :main br.dev}})

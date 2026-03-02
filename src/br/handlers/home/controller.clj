@@ -50,7 +50,7 @@
 
 (defn home
   [request]
-  (let [title "Bienvenido"
+  (let [title "Bienvenido a Bienes Raices Mexicali"
         ok (get-session-id request)
         js nil
         content (private-home title)]

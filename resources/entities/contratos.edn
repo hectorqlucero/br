@@ -1,0 +1,152 @@
+{:entity :contratos
+ :title "Contratos"
+ :table "contratos"
+ :connection :default
+ :rights ["A" "S"]
+ :mode :parameter-driven
+
+ :menu-category :transactions
+ :menu-order 5
+ :menu-icon "bi bi-file-earmark-text"
+ :audit? true
+
+ :fields [{:id :id :type :hidden}
+
+          ;; Identificación
+          {:id :tipo_contrato
+           :label "Tipo de Contrato"
+           :type :select
+           :required? true
+           :options [{:value "Compra-Venta" :label "Compra-Venta"}
+                     {:value "Arrendamiento" :label "Arrendamiento"}
+                     {:value "Promesa de Compra-Venta" :label "Promesa de Compra-Venta"}
+                     {:value "Reservación" :label "Reservación"}]}
+
+          {:id :venta_id
+           :label "Venta Relacionada"
+           :type :fk
+           :fk :ventas
+           :fk-field [:id :fecha_venta]
+           :hidden-in-grid? true}
+
+          {:id :renta_id
+           :label "Renta Relacionada"
+           :type :fk
+           :fk :rentas
+           :fk-field [:id :fecha_inicio]
+           :hidden-in-grid? true}
+
+          ;; Partes
+          {:id :cliente_id
+           :label "Cliente/Comprador/Arrendatario"
+           :type :fk
+           :fk :clientes
+           :fk-field [:nombre :apellido_paterno :apellido_materno]
+           :required? true
+           :hidden-in-grid? true}
+
+          {:id :propiedad_id
+           :label "Propiedad"
+           :type :fk
+           :fk :propiedades
+           :fk-field [:clave :titulo]
+           :required? true}
+
+          ;; Fechas
+          {:id :fecha_firma
+           :label "Fecha de Firma"
+           :type :date :required? true}
+
+          {:id :fecha_inicio
+           :label "Fecha Inicio"
+           :type :date}
+
+          {:id :fecha_fin
+           :label "Fecha Fin"
+           :type :date}
+
+          {:id :fecha_vencimiento
+           :label "Fecha de Vencimiento"
+           :type :date}
+
+          ;; Términos
+          {:id :precio_final
+           :label "Precio Final"
+           :type :decimal :min 0 :step 0.01}
+
+          {:id :enganche
+           :label "Enganche"
+           :type :decimal :min 0 :step 0.01}
+
+          {:id :monto_mensual
+           :label "Monto Mensual"
+           :type :decimal :min 0 :step 0.01}
+
+          {:id :plazo_meses
+           :label "Plazo (meses)"
+           :type :number :min 0}
+
+          ;; Notario/Escrituración
+          {:id :notario
+           :label "Notario"
+           :type :text :maxlength 200}
+
+          {:id :numero_escritura
+           :label "Número de Escritura"
+           :type :text :maxlength 50}
+
+          {:id :fecha_escritura
+           :label "Fecha de Escritura"
+           :type :date}
+
+          {:id :registro_publico
+           :label "Registro Público"
+           :type :text :maxlength 200}
+
+          {:id :folio_registral
+           :label "Folio Registral"
+           :type :text :maxlength 50}
+
+          ;; Documentos
+          {:id :documento_url
+           :label "URL del Documento"
+           :type :text :maxlength 255}
+
+          ;; Estatus
+          {:id :status
+           :label "Estatus"
+           :type :select
+           :value "Borrador"
+           :options [{:value "Borrador" :label "Borrador"}
+                     {:value "Pendiente" :label "Pendiente de Firma"}
+                     {:value "Firmado" :label "Firmado"}
+                     {:value "En Tramite" :label "En Trámite"}
+                     {:value "Completado" :label "Completado"}
+                     {:value "Cancelado" :label "Cancelado"}]}
+
+          {:id :notas :label "Notas" :type :textarea :rows 3 :hidden-in-grid? true}
+
+          ;; Audit columns
+          {:id :created_by :label "Created By" :type :hidden}
+          {:id :created_at :label "Created At" :type :hidden}
+          {:id :modified_by :label "Modified By" :type :hidden}
+          {:id :modified_at :label "Modified At" :type :hidden}]
+
+ :queries {:list "SELECT c.*,
+                 pro.titulo as propiedad_nombre,
+                 CONCAT(cli.nombre, ' ', cli.apellido_paterno) as cliente_nombre
+          FROM contratos c
+          LEFT JOIN propiedades pro ON c.propiedad_id = pro.id
+          LEFT JOIN clientes cli ON c.cliente_id = cli.id
+          ORDER BY c.fecha_firma DESC"
+
+           :get "SELECT * FROM contratos WHERE id = ?"}
+
+ :actions {:new true :edit true :delete false}
+
+ :hooks {:before-save :br.hooks.contratos/validar-contrato}
+
+ :subgrids [{:entity :documentos
+             :foreign-key :entidad_id
+             :title "Documentos"
+             :icon "bi bi-file-earmark"}]}

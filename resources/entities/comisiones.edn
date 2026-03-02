@@ -1,0 +1,115 @@
+{:entity :comisiones
+ :title "Comisiones"
+ :table "comisiones"
+ :connection :default
+ :rights ["A" "S"]
+ :mode :parameter-driven
+
+ :menu-category :finanzas
+ :menu-order 1
+ :menu-icon "bi bi-percent"
+ :audit? true
+
+ :fields [{:id :id :type :hidden}
+
+          ;; Referencia a transacción
+          {:id :tipo
+           :label "Tipo"
+           :type :select
+           :required? true
+           :options [{:value "Venta" :label "Venta"}
+                     {:value "Renta" :label "Renta"}]}
+
+          {:id :venta_id
+           :label "Venta"
+           :type :fk
+           :fk :ventas
+           :fk-field [:id :fecha_venta]
+           :hidden-in-grid? true}
+
+          {:id :renta_id
+           :label "Renta"
+           :type :fk
+           :fk :rentas
+           :fk-field [:id :fecha_inicio]
+           :hidden-in-grid? true}
+
+          {:id :propiedad_id
+           :label "Propiedad"
+           :type :fk
+           :fk :propiedades
+           :fk-field [:clave :titulo]}
+
+          ;; Agente
+          {:id :agente_id
+           :label "Agente"
+           :type :fk
+           :fk :agentes
+           :fk-field [:nombre :apellido_paterno :apellido_materno]
+           :required? true}
+
+          ;; Montos
+          {:id :monto_venta
+           :label "Monto de Venta"
+           :type :decimal :min 0 :step 0.01}
+
+          {:id :porcentaje_comision
+           :label "% Comisión"
+           :type :decimal :min 0 :max 100 :step 0.01}
+
+          {:id :monto_comision
+           :label "Monto Comisión"
+           :type :decimal :min 0 :step 0.01
+           :required? true}
+
+          {:id :monto_pagado
+           :label "Monto Pagado"
+           :type :decimal :min 0 :step 0.01}
+
+          {:id :monto_pendiente
+           :label "Monto Pendiente"
+           :type :decimal :min 0 :step 0.01}
+
+          ;; Fechas
+          {:id :fecha_calculada
+           :label "Fecha Calculada"
+           :type :date}
+
+          {:id :fecha_pago
+           :label "Fecha de Pago"
+           :type :date}
+
+          ;; Estatus
+          {:id :status
+           :label "Estatus"
+           :type :select
+           :value "Pendiente"
+           :options [{:value "Pendiente" :label "Pendiente"}
+                     {:value "Autorizada" :label "Autorizada"}
+                     {:value "Pagada" :label "Pagada"}
+                     {:value "Cancelada" :label "Cancelada"}]}
+
+          {:id :notas :label "Notas" :type :textarea :rows 3 :hidden-in-grid? true}
+
+          ;; Audit columns
+          {:id :created_by :label "Created By" :type :hidden}
+          {:id :created_at :label "Created At" :type :hidden}
+          {:id :modified_by :label "Modified By" :type :hidden}
+          {:id :modified_at :label "Modified At" :type :hidden}]
+
+ :queries {:list "SELECT com.*,
+                 pro.titulo as propiedad_nombre,
+                 CONCAT(age.nombre, ' ', age.apellido_paterno) as agente_nombre,
+                 ven.fecha_venta as fecha_venta_ref
+          FROM comisiones com
+          LEFT JOIN propiedades pro ON com.propiedad_id = pro.id
+          LEFT JOIN agentes age ON com.agente_id = age.id
+          LEFT JOIN ventas ven ON com.venta_id = ven.id
+          ORDER BY com.fecha_calculada DESC"
+
+           :get "SELECT * FROM comisiones WHERE id = ?"}
+
+ :actions {:new true :edit true :delete false}
+
+ :hooks {:before-save :br.hooks.comisiones/calcular-comision
+         :after-save :br.hooks.comisiones/actualizar-estatus-venta}}

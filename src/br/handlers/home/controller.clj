@@ -71,7 +71,7 @@
         password (:password params)
         row (first (get-user username))
         active (:active row)
-        return-path "/"
+        return-path "/home/login"
         back-msg (i18n/tr params :common/back)
         error-general (i18n/tr params :error/general)
         content-error-general [:p error-general [:a {:href return-path} back-msg]]
@@ -79,7 +79,7 @@
         content-error-forbidden [:p error-forbidden [:a {:href return-path} back-msg]]]
     (if (= active "T")
       (if (hashers/check password (:password row))
-        (-> (redirect "/")
+        (-> (redirect "/home")
             (assoc :session (assoc session :user_id (:id row))))
         (application params title 0 nil content-error-general))
       (application params title 0 nil content-error-forbidden))))

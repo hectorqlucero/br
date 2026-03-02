@@ -50,7 +50,7 @@
 
 (defn home
   [request]
-  (let [title "Bienvenido Ruiz Lucero REALTY & INVEST"
+  (let [title "Bienvenido a Ruiz Lucero REALTY & INVEST"
         ok (get-session-id request)
         js nil
         content (private-home title)]
@@ -117,7 +117,7 @@
 
 (defn logoff-user
   [_]
-  (-> (redirect "/")
+  (-> (redirect "/home/login")
       (assoc :session {})))
 
 (comment

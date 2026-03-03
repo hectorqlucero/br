@@ -31,15 +31,9 @@
  ;; Uncomment to enable:
  ;; :audit? true
 
- ;; Lifecycle hooks for business logic
- ;; Senior developer: Implement these in src/br/hooks/estados.clj
- ;; Uncomment and implement as needed:
- ;; :hooks {:before-load :br.hooks.estados/before-load
- ;;         :after-load :br.hooks.estados/after-load
- ;;         :before-save :br.hooks.estados/before-save
- ;;         :after-save :br.hooks.estados/after-save
- ;;         :before-delete :br.hooks.estados/before-delete
- ;;         :after-delete :br.hooks.estados/after-delete}
+  ;; Lifecycle hooks for business logic
+ :hooks {:before-save :br.hooks.estados/before-save
+         :after-save :br.hooks.estados/after-save}
 
  ;; Subgrids for related tables (auto-detected)
  :subgrids [{:entity :municipios

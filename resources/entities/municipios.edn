@@ -11,13 +11,15 @@
  :connection :default
  :rights ["U" "A" "S"]  ;; User levels: U=User, A=Admin, S=System
  :mode :parameter-driven
- :menu-hidden? true
+ :menu-category :catalog
+ :menu-hidden? false
 
- ;; Fields auto-detected from database schema
+  ;; Fields auto-detected from database schema
  :fields [{:id :id :label "ID" :type :hidden}
-          {:id :estado_id :label "Estados ID" :type :hidden}
+          {:id :estado_id :label "Estado" :type :fk :fk :estados :fk-field [:nombre] :required? true}
           {:id :nombre :label "Nombre" :type :text :required? true :placeholder "Nombre..."}
-          {:id :activo :label "Activo" :type :text :placeholder "Activo..."}]
+          {:id :activo :label "Activo" :type :radio :value "T" :options [{:id "activoT" :value "T" :label "Activo"}
+                                                                         {:id "activoF" :value "F" :label "Inactivo"}]}]
 
  ;; Auto-generated queries (customize as needed)
  :queries {:list "SELECT mun.*, est.nombre as estado_nombre FROM municipios mun LEFT JOIN estados est ON mun.estado_id = est.id ORDER BY mun.id DESC"
@@ -30,24 +32,13 @@
  ;; Uncomment to enable:
  ;; :audit? true
 
- ;; Lifecycle hooks for business logic
- ;; Senior developer: Implement these in src/br/hooks/municipios.clj
- ;; Uncomment and implement as needed:
- ;; :hooks {:before-load :br.hooks.municipios/before-load
- ;;         :after-load :br.hooks.municipios/after-load
- ;;         :before-save :br.hooks.municipios/before-save
- ;;         :after-save :br.hooks.municipios/after-save
- ;;         :before-delete :br.hooks.municipios/before-delete
- ;;         :after-delete :br.hooks.municipios/after-delete}
+  ;; Lifecycle hooks for business logic
+ :hooks {:before-save :br.hooks.municipios/before-save
+         :after-save :br.hooks.municipios/after-save}
 
  ;; Subgrids for related tables (auto-detected)
  :subgrids [{:entity :colonias
              :title "Colonias"
              :foreign-key :municipio_id
              :icon "bi bi-list-ul"
-             :label "Colonias"}
-            {:entity :propiedades
-             :title "Propiedades"
-             :foreign-key :municipio_id
-             :icon "bi bi-building"
-             :label "Propiedades"}]}
+             :label "Colonias"}]}

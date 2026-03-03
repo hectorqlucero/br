@@ -71,7 +71,7 @@
                        :db-class  "com.mysql.cj.jdbc.Driver"
                        :db-name   "//localhost:3306/contactos"
                        :db-user   "root"
-                       :db-pwd    "Patito0257."}
+                       :db-pwd    "change_me"}
                :sqlite {:db-type   "sqlite"
                         :db-class  "org.sqlite.JDBC"
                         :db-name   "db/br.sqlite"}
@@ -79,7 +79,7 @@
                           :db-class  "org.postgresql.Driver"
                           :db-name   "//localhost:5432/contactos"
                           :db-user   "postgres"
-                          :db-pwd    "Patito0257."}
+                          :db-pwd    "change_me"}
                :main :sqlite        ; Used for migrations (lein migrate)
                :default :sqlite     ; Used by the application
                :db :mysql           ; MySQL connection reference
@@ -99,10 +99,10 @@
  :facebook-url "https://www.facebook.com/bienesraicesmexicali"
  :instagram-url "https://www.instagram.com/bienesraicesmexicali"
  :whatsapp-url "https://wa.me/528661234567"
- :port         3000
+ :port         8080
  :tz           "US/Pacific"
- :base-url     "http://localhost:3000/"
- :img-url      "http://localhost:3000/uploads/"
+ :base-url     "http://localhost:8080/"
+ :img-url      "http://localhost:8080/uploads/"
  :path         "/uploads/"
 
  ;; --- File Upload Settings ---
@@ -110,6 +110,6 @@
  :allowed-image-exts ["jpg" "jpeg" "png" "gif" "bmp" "webp"]}
 
 ;; --- Email Configuration ---
-:email-host "smtp.fastmail.com"
-:email-user "hectorqlucero@fastmail.com"
-:email-pwd "h64k9rq89m7ba4ap"
+:email-host "change_me"
+:email-user "change_me"
+:email-pwd "change_me"

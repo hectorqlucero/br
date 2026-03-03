@@ -11,6 +11,7 @@
  :connection :default
  :rights ["A" "S"]  ;; User levels: U=User, A=Admin, S=System
  :mode :parameter-driven
+ :menu-category :finanzas
  :menu-hidden? false
  :audit? true
 

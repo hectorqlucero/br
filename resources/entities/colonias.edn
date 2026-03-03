@@ -11,14 +11,16 @@
  :connection :default
  :rights ["U" "A" "S"]  ;; User levels: U=User, A=Admin, S=System
  :mode :parameter-driven
+ :menu-category :catalog
  :menu-hidden? true
 
- ;; Fields auto-detected from database schema
+  ;; Fields auto-detected from database schema
  :fields [{:id :id :label "ID" :type :hidden}
-          {:id :municipio_id :label "Municipios ID" :type :hidden}
+          {:id :municipio_id :label "Municipio" :type :fk :fk :municipios :fk-field [:nombre] :required? true}
           {:id :nombre :label "Nombre" :type :text :required? true :placeholder "Nombre..."}
           {:id :codigo_postal :label "Codigo Postal" :type :text :placeholder "Codigo Postal..."}
-          {:id :activo :label "Activo" :type :text :placeholder "Activo..."}]
+          {:id :activo :label "Activo" :type :radio :value "T" :options [{:id "activoT" :value "T" :label "Activo"}
+                                                                         {:id "activoF" :value "F" :label "Inactivo"}]}]
 
  ;; Auto-generated queries (customize as needed)
  :queries {:list "SELECT col.*, mun.nombre as municipio_nombre FROM colonias col LEFT JOIN municipios mun ON col.municipio_id = mun.id ORDER BY col.id DESC"
@@ -31,15 +33,9 @@
  ;; Uncomment to enable:
  ;; :audit? true
 
- ;; Lifecycle hooks for business logic
- ;; Senior developer: Implement these in src/br/hooks/colonias.clj
- ;; Uncomment and implement as needed:
- ;; :hooks {:before-load :br.hooks.colonias/before-load
- ;;         :after-load :br.hooks.colonias/after-load
- ;;         :before-save :br.hooks.colonias/before-save
- ;;         :after-save :br.hooks.colonias/after-save
- ;;         :before-delete :br.hooks.colonias/before-delete
- ;;         :after-delete :br.hooks.colonias/after-delete}
+  ;; Lifecycle hooks for business logic
+ :hooks {:before-save :br.hooks.colonias/before-save
+         :after-save :br.hooks.colonias/after-save}
 
  ;; Subgrids for related tables (auto-detected)
  :subgrids [{:entity :clientes

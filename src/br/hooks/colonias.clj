@@ -1,12 +1,6 @@
 (ns br.hooks.colonias
-  "Business logic hooks for colonias entity.
-   
-   SENIOR DEVELOPER: Implement custom business logic here.
-   
-   See: HOOKS_GUIDE.md for detailed documentation and examples.
-   Example: src/br/hooks/alquileres.clj
-   
-   Uncomment the hooks you need and implement the logic.")
+  "Business logic hooks for colonias entity."
+  (:require [br.models.crud :as crud :refer [Query]]))
 
 ;; =============================================================================
 ;; Validators
@@ -70,19 +64,28 @@
 
 (defn before-save
   "Hook executed before saving a record.
-   
-   Use cases:
-   - Validate data
-   - Set defaults
-   - Transform values
-   - Check permissions
-   
-   Args: [params] - Form data to be saved
-   Returns: Modified params map OR {:errors {...}} if validation fails"
+    
+    Use cases:
+    - Validate data
+    - Set defaults
+    - Transform values
+    - Check permissions
+    
+    Args: [params] - Form data to be saved
+    Returns: Modified params map OR {:errors {...}} if validation fails"
   [params]
   (println "[INFO] Saving colonias...")
-  ;; TODO: Add validation and transformation logic
-  params)
+  (let [nombre (:nombre params)
+        municipio-id (:municipio_id params)
+        existing (when (and nombre municipio-id)
+                   (Query crud/db ["SELECT id FROM colonias WHERE nombre = ? AND municipio_id = ?" nombre municipio-id]))]
+    (cond
+      (and nombre municipio-id (seq existing) (not= (:id (first existing)) (:id params)))
+      {:errors {:nombre "Ya existe una colonia con ese nombre en el municipio seleccionado"}}
+
+      :else
+      (cond-> params
+        nombre (assoc :nombre (clojure.string/capitalize nombre))))))
 
 (defn after-save
   "Hook executed after successfully saving a record.

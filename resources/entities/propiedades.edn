@@ -32,6 +32,7 @@
            :type :fk
            :fk :estados
            :fk-field [:nombre]
+           :fk-can-create? true
            :required? true
            :hidden-in-grid? true}
           {:id :estado_nombre :label "Estado" :grid-only? true}
@@ -41,6 +42,8 @@
            :type :fk
            :fk :municipios
            :fk-field [:nombre]
+           :fk-parent :estado_id
+           :fk-can-create? true
            :hidden-in-grid? true}
           {:id :municipio_nombre :label "Municipio" :grid-only? true}
 
@@ -49,6 +52,8 @@
            :type :fk
            :fk :colonias
            :fk-field [:nombre :codigo_postal]
+           :fk-parent :municipio_id
+           :fk-can-create? true
            :hidden-in-grid? true}
           {:id :agente_nombre :label "Agente" :grid-only? true}
 

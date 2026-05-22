@@ -1,6 +1,7 @@
 (ns br.layout
   (:require
    [clj-time.core :as t]
+   [clojure.data.json :as json]
    [clojure.string :as str]
    [hiccup.page :refer [html5]]
    [br.models.crud :refer [config]]
@@ -15,7 +16,8 @@
       (str/replace #"[^a-zA-Z0-9\-]" "")
       (str/replace #"^$" "home")))
 
-(defn build-link [request href label]
+
+(defn build-link [request href label & [icon]]
   (let [uri (:uri request)
         data-id (generate-data-id href)
         is-active (= uri href)]
@@ -26,9 +28,11 @@
        :class (str (when is-active "active bg-gradient text-primary-emphasis shadow-sm"))
        :aria-current (when is-active "page")
        :onclick "localStorage.setItem('active-link', this.dataset.id)"}
+      (when icon [:i.me-2 {:class icon}])
       label]]))
 
-(defn build-dropdown-link [request href label]
+
+(defn build-dropdown-link [request href label & [icon]]
   (let [uri (:uri request)
         is-active (= uri href)]
     [:li
@@ -38,17 +42,31 @@
        :aria-current (when is-active "page")
        :data-id (generate-data-id href)
        :onclick "localStorage.setItem('active-link', this.dataset.id)"}
+      (when icon [:i.me-2 {:class icon}])
       label]]))
 
 (defn build-menu [request items]
   (when (some #{(user-level request)} ["A" "S" "U"])
-    (for [{:keys [href label role]} items
+    (for [{:keys [href label role icon]} items
           :when (or (nil? role)
                     (= (user-level request) role)
                     (some #{(user-level request)} ["A" "S"]))]
-      (build-dropdown-link request href label))))
+      (build-dropdown-link request href label icon))))
 
-(defn build-dropdown [request dropdown-id data-id label items]
+;; HELPER FUNCTIONS
+(defn menu-item->map [[href label & rest]]
+  (let [[role-or-icon maybe-icon] rest
+        role (when (and role-or-icon (not (clojure.string/starts-with? (str role-or-icon) "bi ")))
+               role-or-icon)
+        icon (cond
+               (and maybe-icon (string? maybe-icon)) maybe-icon
+               (and role-or-icon (string? role-or-icon) (clojure.string/starts-with? role-or-icon "bi ")) role-or-icon
+               :else nil)]
+    (cond-> {:href href :label label}
+      role (assoc :role role)
+      icon (assoc :icon icon))))
+
+(defn build-dropdown [request dropdown-id data-id label items & [icon]]
   (when (some #{(user-level request)} ["A" "S" "U"])
     [:li.nav-item.dropdown
      [:a.nav-link.dropdown-toggle.fw-semibold.px-3.py-2.rounded.transition
@@ -59,22 +77,20 @@
        :role "button"
        :data-bs-toggle "dropdown"
        :aria-expanded "false"}
+      (when icon [:i.me-2 {:class icon}])
       label]
      [:ul.dropdown-menu.shadow-lg.border-0.rounded.mt-2
       {:aria-labelledby dropdown-id
        :style "max-height: 60vh; overflow-y: auto;"}
       (build-menu request items)]]))
 
-;; HELPER FUNCTIONS
-(defn menu-item->map [[href label & [role]]]
-  {:href href :label label :role role})
+(defn create-dropdown [request {:keys [id data-id label items icon]}]
+  (let [menu-items (map menu-item->map items)]
+    (build-dropdown request id data-id label menu-items icon)))
 
 (defn create-nav-links [request nav-links]
-  (map (fn [[href label]] (build-link request href label)) nav-links))
-
-(defn create-dropdown [request {:keys [id data-id label items]}]
-  (let [menu-items (map menu-item->map items)]
-    (build-dropdown request id data-id label menu-items)))
+  (map (fn [item]
+         (apply build-link request item)) nav-links))
 
 (defn brand-logo []
   [:a.navbar-brand.fw-bold.fs-4.d-flex.align-items-center.gap-2 {:href "/"}
@@ -84,12 +100,29 @@
    [:span.d-none.d-md-inline (:site-name config)]])
 
 (defn logout-button [request]
-  [:li.nav-item.ms-3
-   [:a.btn.btn-primary.btn-sm.px-3.rounded-pill.fw-semibold
-    {:href "/home/logoff"
-     :onclick "localStorage.removeItem('active-link')"}
-    [:i.bi.bi-box-arrow-right.me-1]
-    (str (i18n/tr request :auth/logout) " " (user-name request))]])
+  [:li.nav-item.dropdown.ms-3
+   [:a.btn.btn-primary.btn-sm.px-3.rounded-pill.fw-semibold.dropdown-toggle
+    {:href "#"
+     :id "userDropdown"
+     :role "button"
+     :data-bs-toggle "dropdown"
+     :aria-expanded "false"}
+    [:i.bi.bi-person-circle.me-1]
+    (user-name request)]
+   [:ul.dropdown-menu.dropdown-menu-end.shadow.border-0
+    {:aria-labelledby "userDropdown"}
+    [:li
+     [:a.dropdown-item.fw-semibold
+      {:href "/change/password"}
+      [:i.bi.bi-key.me-2]
+      (i18n/tr request :auth/change-password)]]
+    [:li [:hr.dropdown-divider]]
+    [:li
+     [:a.dropdown-item.fw-semibold.text-danger
+      {:href "/home/logoff"
+       :onclick "localStorage.removeItem('active-link')"}
+      [:i.bi.bi-box-arrow-right.me-2]
+      (i18n/tr request :auth/logout)]]]])
 
 ;; THEME SWITCHER
 (def theme-options
@@ -179,7 +212,7 @@
       [:div#mainNavbar.collapse.navbar-collapse
        [:ul.navbar-nav.ms-auto.align-items-lg-center.gap-2
         (create-nav-links request nav-links)
-        (doall (for [[category dropdown] dropdowns]
+        (doall (for [[_category dropdown] dropdowns]
                  (create-dropdown request dropdown)))
         (theme-switcher)
         (language-selector request)
@@ -247,20 +280,19 @@
   "Outputs JavaScript variables with i18n translations for client-side use"
   [request]
   [:script
-   (str "window.i18nStrings = {"
-        "  emptyTable: \"" (i18n/tr request :grid/no-records) "\","
-        "  info: \"" (i18n/tr request :datatables/info) "\","
-        "  infoEmpty: \"" (i18n/tr request :datatables/info-empty) "\","
-        "  infoFiltered: \"" (i18n/tr request :datatables/info-filtered) "\","
-        "  lengthMenu: \"" (i18n/tr request :datatables/length-menu) "\","
-        "  search: \"" (i18n/tr request :datatables/search) "\","
-        "  searchPlaceholder: \"" (i18n/tr request :datatables/search-placeholder) "\","
-        "  zeroRecords: \"" (i18n/tr request :datatables/zero-records) "\","
-        "  paginate: {"
-        "    previous: '<i class=\"bi bi-chevron-left\"></i>',"
-        "    next: '<i class=\"bi bi-chevron-right\"></i>'"
-        "  }"
-        "};")])
+   (str "window.i18nStrings = "
+        (json/write-str
+         {:emptyTable     (i18n/tr request :grid/no-records)
+          :info           (i18n/tr request :datatables/info)
+          :infoEmpty      (i18n/tr request :datatables/info-empty)
+          :infoFiltered   (i18n/tr request :datatables/info-filtered)
+          :lengthMenu     (i18n/tr request :datatables/length-menu)
+          :search         (i18n/tr request :datatables/search)
+          :searchPlaceholder (i18n/tr request :datatables/search-placeholder)
+          :zeroRecords    (i18n/tr request :datatables/zero-records)
+          :paginate       {:previous "<i class=\"bi bi-chevron-left\"></i>"
+                           :next     "<i class=\"bi bi-chevron-right\"></i>"}})
+        ";")])
 
 (defn app-js [request]
   (list
@@ -277,18 +309,20 @@
    [:script {:src "/vendor/buttons.print.min.js"}]
    (i18n-js-vars request)
    [:script {:src "/vendor/app.js"}]
-   [:script {:src "/js/tabgrid.js"}]
-   [:script (:src "/js/mhighlight.js")]
-   [:script (:src "/js/lang.js")]
+   [:script {:src "/js/tabgrid.js?v=3"}]
+   [:script {:src "/js/mhighlight.js"}]
+   [:script {:src "/js/lang.js"}]
    ;; fk-dependent.js contains the logic for dependent selects & create modal
    ;; bump version when editing so browsers reload the file
    [:script {:src "/js/fk-dependent.js?v=6"}]))
+
 
 ;; LAYOUT FUNCTIONS
 
 ;; Add theme class to <body> using (:theme config)
 (defn application [request title ok js & content]
   (html5
+   {:lang "es"}  ;; Set default language to Spanish
    [:head
     [:style ".preload { visibility: hidden; }"]
     [:script
@@ -327,7 +361,7 @@
      [:div.modal-dialog
       [:div.modal-content
        [:div.modal-header.bg-primary.text-white
-        [:h5#exampleModalLabel.modal-title "Modal"]
+        [:h5#exampleModalLabel.modal-title ""]
         [:button.btn-close {:type "button" :data-bs-dismiss "modal" :aria-label "Close"}]]
        [:div.modal-body]]]]
     (app-js request)
@@ -339,8 +373,20 @@
 (defn error-404
   ([msg] (error-404 msg nil))
   ([msg redirect-url]
-   [:div
-    [:h1 "Error 404"]
-    [:p msg]
-    (when redirect-url
-      [:a {:href redirect-url} "Go back"])]))
+   {:status 404
+    :headers {"Content-Type" "text/html; charset=utf-8"}
+    :body (html5 [:div
+                  [:h1 "Error 404"]
+                  [:p msg]
+                  (when redirect-url
+                    [:a {:href redirect-url} "Go back"])])}))
+(defn error-404
+  ([msg] (error-404 msg nil))
+  ([msg redirect-url]
+   {:status 404
+    :headers {"Content-Type" "text/html; charset=utf-8"}
+    :body (html5 [:div
+                  [:h1 "Error 404"]
+                  [:p msg]
+                  (when redirect-url
+                    [:a {:href redirect-url} "Go back"])])}))

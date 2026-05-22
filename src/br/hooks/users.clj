@@ -1,12 +1,15 @@
 (ns br.hooks.users
-  "Business logic hooks for usuarios entity.
+  "Business logic hooks for users entity.
    
    SENIOR DEVELOPER: Implement custom business logic here.
    
    See: HOOKS_GUIDE.md for detailed documentation and examples.
    Example: src/br/hooks/alquileres.clj
    
-   Uncomment the hooks you need and implement the logic.")
+   Uncomment the hooks you need and implement the logic."
+  (:require
+   [buddy.hashers :as hashers]
+   [clojure.string :as st]))
 
 ;; =============================================================================
 ;; Validators
@@ -49,7 +52,7 @@
    Returns: Modified params map"
   [params]
   ;; TODO: Add your logic here
-  (println "[INFO] Loading usuarios with params:" params)
+  (println "[INFO] Loading users with params:" params)
   params)
 
 (defn after-load
@@ -63,26 +66,36 @@
    Args: [rows params] - Loaded rows and query params
    Returns: Modified rows vector"
   [rows params]
-  (println "[INFO] Loaded" (count rows) "usuarios record(s)")
-  ;; TODO: Add your transformations here, then return the result
-  ;; Example: (map #(assoc % :full-name (str (:first-name %) " " (:last-name %))) rows)
+  ;; TODO: Add your logic here
+  (println "[INFO] Loaded" (count rows) "users record(s)")
   rows)
 
 (defn before-save
   "Hook executed before saving a record.
    
-   Use cases:
-   - Validate data
-   - Set defaults
-   - Transform values
-   - Check permissions
+   Password handling:
+   - New user with no password → default password set to their username (email).
+     They must change it via /change/password after first login.
+   - Existing user with no password in params → password column left untouched.
+   - Any user where a password value is provided → hashed before saving.
    
    Args: [params] - Form data to be saved
    Returns: Modified params map OR {:errors {...}} if validation fails"
   [params]
-  (println "[INFO] Saving usuarios...")
-  ;; TODO: Add validation and transformation logic
-  params)
+  (let [password (:password params)
+        is-new?  (let [id (:id params)] (or (nil? id) (st/blank? (str id)) (= (str id) "0")))]
+    (cond
+      ;; Password provided — hash it regardless of new/edit
+      (and password (not (st/blank? password)))
+      (assoc params :password (hashers/derive password))
+
+      ;; New record, no password — set default to username (email)
+      is-new?
+      (assoc params :password (hashers/derive (or (:username params) "changeme")))
+
+      ;; Existing record, no password — leave the column untouched
+      :else
+      (dissoc params :password))))
 
 (defn after-save
   "Hook executed after successfully saving a record.
@@ -97,7 +110,7 @@
    Returns: {:success true}"
   [entity-id params]
   ;; TODO: Add post-save logic
-  (println "[INFO] Usuarios saved successfully. ID:" entity-id)
+  (println "[INFO] Users saved successfully. ID:" entity-id)
   {:success true})
 
 (defn before-delete
@@ -112,7 +125,7 @@
    Returns: {:success true} to allow, or {:errors {...}} to prevent"
   [entity-id]
   ;; TODO: Add pre-delete checks
-  (println "[INFO] Checking if usuarios can be deleted. ID:" entity-id)
+  (println "[INFO] Checking if users can be deleted. ID:" entity-id)
   {:success true})
 
 (defn after-delete
@@ -128,5 +141,5 @@
    Returns: {:success true}"
   [entity-id]
   ;; TODO: Add post-delete logic
-  (println "[INFO] Usuarios deleted successfully. ID:" entity-id)
+  (println "[INFO] Users deleted successfully. ID:" entity-id)
   {:success true})

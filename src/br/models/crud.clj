@@ -156,7 +156,7 @@
 
                      ;; Fallback to a sensible local SQLite file for development
                      :else
-                     {:default {:db-type "sqlite" :db-name "db/br.sqlite"}})]
+                     {:default {:db-type "sqlite" :db-name "db/.sqlite"}})]
     (into {}
           (keep (fn [[k v]]
                   (let [resolved (resolve-conn conn-cands v)]
@@ -634,7 +634,17 @@
                                    blank->nil)
                          (= id 0) (dissoc :id))
               where-clause (single-id-where id)]
-          (try-save db* table postvars where-clause))
+          (let [result (try-save db* table postvars where-clause)]
+            (if (and result (= id 0))
+              (or (when (map? result)
+                    (or (:generated_key result)
+                        (:generated-key result)
+                        (:id result)
+                        (:last_insert_rowid result)
+                        (:scope_identity result)))
+                  (db/last-insert-id db* db*)
+                  result)
+              result)))
         (let [pk-map (get-primary-key-map table params :conn conn)
               is-new? (pk-is-new? pk-map)
               base-postvars (-> (build-postvars table params :conn conn) blank->nil)
@@ -748,7 +758,7 @@
                       (j/update! t-con (keyword table) {:imagen image-name}
                                  [(str (name pk-name) " = ?") (try (Long/parseLong the-id) (catch Exception _ the-id))]
                                  q-opts))
-                    true)))))
+                    ins-id)))))
           (existing-or-composite-upload! [db* table pk-fields pk-map postvars is-new? file conn]
             (let [single-pk? (= 1 (count pk-fields))
                   the-id (if single-pk?
@@ -773,7 +783,15 @@
                 (let [old (:imagen prev-row)]
                   (when (and (string? old) (not= old image-name))
                     (safe-delete-upload! old))))
-              (boolean result)))]
+              (if result
+                (or (when (map? result)
+                      (or (:generated_key result)
+                          (:generated-key result)
+                          (:id result)
+                          (:last_insert_rowid result)
+                          (:scope_identity result)))
+                    result)
+                false)))]
     (let [pk-fields (get-table-primary-keys table :conn conn)
           pk-map (get-primary-key-map table params :conn conn)
           file (:file params)
@@ -847,15 +865,14 @@
       nil)))
 
 (defn- build-form-delete* [db* table id-or-pk pk-fields]
-  (try
-    (let [row (select-row db* table id-or-pk pk-fields)]
-      (when-let [img (:imagen row)] (safe-delete-upload! img))
-      (when row (cascade-delete-images! db* table row))
-      (boolean (seq (perform-delete db* table id-or-pk pk-fields))))
-    (catch Exception e
-      (println "[ERROR] build-form-delete failed:" (.getMessage e))
-      (println "[ERROR] Exception details:" e)
-      false)))
+  (let [row (select-row db* table id-or-pk pk-fields)
+        delete-result (when row
+                        (cascade-delete-images! db* table row)
+                        (perform-delete db* table id-or-pk pk-fields))
+        deleted? (pos? (update-count' delete-result))]
+    (when (and deleted? row)
+      (when-let [img (:imagen row)] (safe-delete-upload! img)))
+    deleted?))
 
 (defn build-form-delete
   ([table id-or-pk]

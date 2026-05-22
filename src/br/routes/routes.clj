@@ -13,3 +13,7 @@
   (POST "/change/password" req [] (home-controller/process-password req))
   (GET "/property/:id" req (home-controller/property-detail req))
   (GET "/api/municipios" req [] (home-controller/municipios-api req)))
+
+(defroutes password-routes
+  (GET "/change/password" params [] (home-controller/change-password params))
+  (POST "/change/password" params [] (home-controller/process-password params)))

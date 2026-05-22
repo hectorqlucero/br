@@ -3,15 +3,15 @@
   :url "http://example.com/FIXME" ; Change me - optional
   :license {:name "MIT License"
             :url "https://opensource.org/licenses/MIT"}
-  :dependencies [[org.clojure/clojure "1.12.4"]
-                 [org.clojure/data.csv "1.1.0"]
-                 [org.clojure/data.json "2.5.1"]
-                 [org.slf4j/slf4j-simple "2.0.17"]
+  :dependencies [[org.clojure/clojure "1.12.5"]
+                 [org.clojure/data.csv "1.1.1"]
+                 [org.clojure/data.json "2.5.2"]
+                 [org.slf4j/slf4j-simple "2.0.18"]
                  [compojure "1.7.2"]
                  [hiccup "2.0.0"]
                  [buddy/buddy-hashers "2.0.167"]
                  [com.draines/postal "2.0.5"]
-                 [cheshire "6.1.0"]
+                 [cheshire "6.2.0"]
                  [clj-pdf "2.7.4"]
                  [ondrs/barcode "0.1.0"]
                  [pdfkit-clj "0.1.7"]
@@ -22,20 +22,19 @@
                  [org.clojure/java.jdbc "0.7.12"]
                  ;; Active JDBC drivers (MySQL, PostgreSQL, SQLite)
                  [mysql/mysql-connector-java "8.0.33"]
-                 [org.postgresql/postgresql "42.7.8"]
-                 [org.xerial/sqlite-jdbc "3.51.1.0"]
+                 [org.postgresql/postgresql "42.7.11"]
+                 [org.xerial/sqlite-jdbc "3.53.1.0"]
                  ;; Optional JDBC drivers (uncomment if needed)
                  ;; [com.microsoft.sqlserver/mssql-jdbc "12.8.1.jre11"]   ; SQL Server
                  ;; [com.h2database/h2 "2.2.224"]                        ; H2
                  ;; [com.oracle.database.jdbc/ojdbc8 "21.11.0.0"]        ; Oracle (check licensing)
                  [ragtime "0.8.1"]
-                 [ring/ring-core "1.15.3"]
-                 [ring/ring-jetty-adapter "1.15.3"]
+                 [ring/ring-core "1.15.4"]
+                 [ring/ring-jetty-adapter "1.15.4"]
                  [ring/ring-defaults "0.7.0"]
-                 [ring/ring-devel "1.15.3"]
+                 [ring/ring-devel "1.15.4"]
                  [ring/ring-codec "1.3.0"]]
-  :main ^:skip-aot br.core
-  :aot [br.core]
+  :main br.core
   :plugins [[lein-ancient "0.7.0"]
             [lein-pprint "1.3.2"]]
   :uberjar-name "br.jar"
@@ -57,11 +56,20 @@
             ;;   lein convert-migrations mysql        ; default (mysql)
             ;;   lein convert-migrations postgresql   ; postgres
             "convert-migrations" ["run" "-m" "br.db.converter" "--"]
-            ;; Copy data from SQLite to MySQL/PostgreSQL
-            ;;   lein copy-data mysql    ; copy from SQLite to MySQL
-            ;;   lein copy-data postgresql
-            "copy-data" ["run" "-m" "br.db.migrator" "--"]}
+            ;; Copy data between databases
+            ;;   lein copy-data localdb mysql          ; SQLite → MySQL
+            ;;   lein copy-data mysql localdb          ; MySQL → SQLite
+            ;;   lein copy-data localdb postgresql     ; SQLite → PostgreSQL
+            ;;   lein copy-data mysql postgresql       ; MySQL → PostgreSQL
+            ;;   lein copy-data localdb mysql --clear  ; clear target tables first
+            ;;   lein copy-data mysql                  ; MySQL → SQLite (default target)
+            "copy-data" ["run" "-m" "br.db.migrator" "--"]
+            ;; Generate/remove handler skeleton (controller, model, view)
+            ;;   lein gen-handler reports          ; create
+            ;;   lein gen-handler reports remove   ; remove
+            "gen-handler" ["run" "-m" "br.gen.handler" "--"]}
   :profiles {:uberjar {:aot :all
+                       :main br.core
                        :jvm-opts ["-Dclojure.compiler.direct-linking=true"]}
              :dev {:source-paths ["src" "dev"]
                    :main br.dev}})

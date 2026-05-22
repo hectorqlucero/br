@@ -214,7 +214,7 @@
                          :fk-parent (:fk-parent field)
                          :fk-entity (:fk field)
                          :fk-can-create (:fk-can-create? field)
-                         :fk-form-fields (:fk-form-fields field)})
+                         :fk-form-fields (or (:fk-form-fields field) (:fk-field field))})
 
       :radio
       (form/build-field {:label label
@@ -228,6 +228,7 @@
                          :type "checkbox"
                          :id (name id)
                          :name (name id)
+                         :checked-value (or value "T")
                          :value field-value})
 
       :file
@@ -285,23 +286,33 @@
                          :value field-value}))))
 
 (defn render-form
-  "Renders a form for an entity based on its configuration."
-  [request entity row]
-  (let [config (config/get-entity-config entity)
-        fields (config/get-form-fields entity)
-        entity-name (name entity)
-        href (str "/admin/" entity-name "/save")
-        custom-form-fn (get-in config [:ui :form-fn])]
-    (if custom-form-fn
-      (custom-form-fn entity row)
-      (let [field-elements (map #(render-field % row) fields)
-            buttons (form/build-modal-buttons request)]
-        (form/form href field-elements buttons)))))
+  "Renders a form for an entity based on its configuration.
+   Optional subgrid-fk: FK field id to hide and render as hidden input instead."
+  ([request entity row] (render-form request entity row nil))
+  ([request entity row subgrid-fk]
+   (let [config (config/get-entity-config entity)
+         fields (config/get-form-fields entity subgrid-fk)
+         entity-name (name entity)
+         href (str "/admin/" entity-name "/save")
+         custom-form-fn (get-in config [:ui :form-fn])]
+     (if custom-form-fn
+       (custom-form-fn entity row)
+       (let [fk-hidden (when (and subgrid-fk (get row subgrid-fk))
+                         (form/build-field {:type "hidden"
+                                            :id (name subgrid-fk)
+                                            :name (name subgrid-fk)
+                                            :value (get row subgrid-fk)}))
+             field-elements (map #(render-field % row) fields)
+             all-elements (if fk-hidden
+                            (cons fk-hidden field-elements)
+                            field-elements)
+             buttons (form/build-modal-buttons request)]
+         (form/form href all-elements buttons))))))
 
 (defn render-form-modal
   "Renders a form wrapped in a modal."
-  [title entity row]
-  (let [form-content (render-form entity row)]
+  [request title entity row]
+  (let [form-content (render-form request entity row)]
     (grid/build-modal title row form-content)))
 
 (defn- build-fields-map

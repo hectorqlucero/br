@@ -96,15 +96,18 @@
         (let [config (config/get-entity-config entity)
               title (str "New " (:title config))
               parent-id (get-in request [:params :parent_id])
-              ;; For subgrids, we need to find which FK field to populate
-              ;; Look for a hidden FK field (parent reference)
-              row (when parent-id
-                    (let [fk-field (first (filter #(and (= (:type %) :hidden)
-                                                        (not= (:id %) :id))
-                                                  (:fields config)))]
-                      (when fk-field
-                        {(:id fk-field) parent-id})))]
-          (html (render/render-form request entity row)))
+              parent-entity-str (get-in request [:params :parent_entity])
+              ;; For subgrids, find the FK field from parent's subgrid config
+              subgrid-fk (when (and parent-id parent-entity-str)
+                           (let [parent-entity (keyword parent-entity-str)
+                                 parent-config (try (config/get-entity-config parent-entity)
+                                                    (catch Exception _ nil))
+                                 matching-sg (first (filter #(= (:entity %) entity)
+                                                            (:subgrids parent-config)))]
+                             (:foreign-key matching-sg)))
+              row (when (and parent-id subgrid-fk)
+                    {subgrid-fk parent-id})]
+          (html (render/render-form request entity row subgrid-fk)))
         (catch Exception e
           (println "[ERROR] Add form handler failed:" (.getMessage e))
           (.printStackTrace e)
@@ -147,9 +150,13 @@
                        (crud/save-with-audit entity params user-id)
                        (crud/save-record entity params {:user-id user-id}))]
           (if (:success result)
-            {:status 200
-             :headers {"Content-Type" "application/json"}
-             :body "{\"ok\":true}"}
+            (let [entity-name (name entity)
+                  record-id (:success result)
+                  return-tab (get params "return_tab" (get params :return_tab))
+                  url (str "/admin/" entity-name
+                           (when (and record-id (number? record-id))
+                             (str "?id=" record-id)))]
+              (redirect url))
             {:status 400
              :headers {"Content-Type" "application/json"}
              :body (str "{\"ok\":false,\"errors\":"
@@ -187,7 +194,8 @@
           (if (:success result)
             {:status 302
              :headers {"Location" (str "/admin/" entity-name)}}
-            (error-404 "Unable to delete record!" (str "/admin/" entity-name))))
+            (error-404 (or (:error result) "Unable to delete record!")
+                       (str "/admin/" entity-name))))
         (catch Exception e
           (println "[ERROR] Delete handler failed:" (.getMessage e))
           (.printStackTrace e)
@@ -273,6 +281,13 @@
     (POST "/save" request
       (handle-save (assoc-in request [:params :entity] entity)))
 
+    ;; Modern delete path used by forms and AJAX
+    (POST "/delete/:id" [id :as request]
+      (handle-delete (-> request
+                         (assoc-in [:params :entity] entity)
+                         (assoc-in [:params :id] id))))
+
+    ;; Backward-compatible GET delete path for legacy links or older framework behavior
     (GET "/delete/:id" [id :as request]
       (handle-delete (-> request
                          (assoc-in [:params :entity] entity)
@@ -283,10 +298,6 @@
 
   ;; Dashboard Routes
   (GET "/dashboard/:entity" [entity :as request]
-    (handle-dashboard (assoc-in request [:params :entity] entity)))
-
-  ;; Report Routes (alias for dashboard)
-  (GET "/reports/:entity" [entity :as request]
     (handle-dashboard (assoc-in request [:params :entity] entity)))
 
   ;; Development/Admin Routes

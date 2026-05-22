@@ -92,11 +92,7 @@
        [:div.d-flex.gap-2.justify-content-end.mt-4
         [:button.btn.btn-success.btn-lg.fw-semibold
          {:type "submit"}
-         [:i.bi.bi-box-arrow-in-right.me-2] (i18n/tr nil :auth/login)]
-        [:a.btn.btn-outline-info.btn-lg.fw-semibold
-         {:role "button"
-          :href "/change/password"}
-         [:i.bi.bi-key.me-2] (i18n/tr nil :auth/change-password)]]]]]]))
+         [:i.bi.bi-box-arrow-in-right.me-2] (i18n/tr nil :auth/login)]]]]]]))
 
 (defn build-image-field
   "Renders an image upload field with preview functionality"
@@ -173,8 +169,10 @@
             select-id (name (:id args))
             ;; Data attributes for fk selects (only if fk-entity is present)
             data-attrs (when fk-entity
-                         (let [base {:data-fk-entity (name fk-entity)
-                                     :data-fk-current-value (str (:value args))}]
+                         (let [base (merge {:data-fk-entity (name fk-entity)
+                                            :data-fk-current-value (str (:value args))}
+                                           (when fk-form-fields
+                                             {:data-fk-form-fields (str/join "," (map name fk-form-fields))}))]
                            (if fk-parent
                              (assoc base :data-fk-parent (name fk-parent))
                              base)))
@@ -209,15 +207,35 @@
            label-el
            [:div.input-group
             select-el
-            [:button.btn.btn-outline-success.btn-lg {:type "button"
-                                                     :title "Agregar nuevo"
-                                                     :onclick (format "showFkCreateModal('%s', '%s', '%s', this)" (name fk-entity) select-id (name (or fk-parent "")))
-                                                     :data-fk-form-fields (str/join "," (map name (or fk-form-fields [:nombre])))}
+            [:button.btn.btn-outline-success.btn-lg (merge {:type "button"
+                                                            :title "Agregar nuevo"
+                                                            :onclick (format "showFkCreateModal('%s', '%s', '%s', this)" (name fk-entity) select-id (name (or fk-parent "")))}
+                                                           (when fk-form-fields
+                                                             {:data-fk-form-fields (str/join "," (map name fk-form-fields))}))
              [:i.bi.bi-plus-circle]]]]
           ;; Standard select
           [:div.mb-3
            label-el
            select-el]))
+
+      (and (= type "checkbox") (empty? (:options args)))
+      (let [checked-value (or (:checked-value args) "T")]
+        [:div.mb-3
+         ;; Hidden fallback ensures the key is always present in params when unchecked
+         [:input {:type "hidden" :name (:name args) :value ""}]
+         [:div.form-check
+          [:input.form-check-input
+           {:type     "checkbox"
+            :id       (or (:id args) (:name args))
+            :name     (:name args)
+            :value    checked-value
+            :checked  (when (= (str (:value args)) (str checked-value)) true)
+            :required (:required args)
+            :disabled (:disabled args)
+            :style    "transform: scale(1.2);"}]
+          [:label.form-check-label.fw-medium.ms-2
+           {:for (or (:id args) (:name args))}
+           (:label args)]]])
 
       (or (= type "radio") (= type "checkbox"))
       [:div.mb-3

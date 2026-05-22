@@ -4,7 +4,7 @@
    [compojure.route :as route]
    [br.models.crud :refer [config KEY]]
    [br.routes.proutes :refer [proutes]]
-   [br.routes.routes :refer [open-routes]]
+   [br.routes.routes :refer [open-routes password-routes]]
    [br.routes.i18n :refer [i18n-routes]]
    [br.routes.tabgrid :refer [tabgrid-routes]]
    [br.routes.fk-api :refer [fk-api-routes]]
@@ -105,7 +105,7 @@
                 msg (.getMessage rc)
                 kind (when sql? (classify-sql rc msg))
                 dd (when (= kind :unique) (dup-details msg))
-;; Decide status and friendly message (with localization support)
+                ;; Decide status and friendly message (with localization support)
                 [status plain] (cond
                                  csrf? [403 (cfg/get-error-message :security :csrf :es)]
                                  (= kind :unique) [409 (if-let [f (:field dd)]
@@ -145,10 +145,12 @@
      (wrap-routes open-routes)
      ;; I18n language switching routes
      (wrap-routes i18n-routes)
-      ;; FK API routes (for dependent selects and create modal)
-     (wrap-routes fk-api-routes)
-      ;; TabGrid AJAX routes
-     (wrap-routes tabgrid-routes)
+     ;; Password change routes - protected
+     (wrap-login (wrap-routes password-routes))
+     ;; FK API routes (for dependent selects and create modal) - protected
+     (wrap-login (wrap-routes fk-api-routes))
+     ;; TabGrid AJAX routes - protected
+     (wrap-login (wrap-routes tabgrid-routes))
      ;; Legacy generated routes (for backward compatibility)
      (wrap-login (wrap-routes proutes))
      ;; Parameter-driven engine routes (NEW)
@@ -178,12 +180,13 @@
       (wrap-exception-handling)))
 
 (def app
-  (reify
-    clojure.lang.IDeref
-    (deref [_] (create-app))
-    clojure.lang.IFn
-    (invoke [_ request] ((create-app) request))
-    (applyTo [_ args] (apply (create-app) args))))
+  (let [handler (create-app)]
+    (reify
+      clojure.lang.IDeref
+      (deref [_] handler)
+      clojure.lang.IFn
+      (invoke [_ request] (handler request))
+      (applyTo [_ args] (apply handler args)))))
 
 ;; Main entry point
 (defn -main
